@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Chaos Master Game Hub</title>
+
+<style>
+body{
+  font-family: Arial;
+  background:black;
+  color:white;
+  text-align:center;
+  padding:20px;
+  overflow-x:hidden;
+}
+
+.container{
+  max-width:800px;
+  margin:auto;
+}
+
+button{
+  padding:10px 20px;
+  margin:10px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  background:#222;
+  color:white;
+  position:relative;
+}
+
+button:hover{
+  background:#444;
+}
+
+#glitchText{
+  font-size:24px;
+  margin-top:20px;
+}
+
+#impossibleBtn{
+  position:absolute;
+}
+
+.hidden{
+  display:none;
+}
+
+</style>
+</head>
+<body>
+
+<h1>😈 CHAOS MASTER GAME HUB 😈</h1>
+
+<div class="container">
+
+<h2>Select Mode</h2>
+
+<button onclick="startGlitch()">Reality Glitch</button>
+<button onclick="startMindReader()">Mind Reader</button>
+<button onclick="startImpossible()">Impossible Challenge</button>
+
+<div id="gameArea"></div>
+
+</div>
+
+<script>
+
+const gameArea=document.getElementById("gameArea");
+
+//////////////////// REALITY GLITCH ////////////////////
+
+function startGlitch(){
+  gameArea.innerHTML=`
+  <h2>⚠ System Stable...</h2>
+  <p id="glitchText">Everything looks normal.</p>
+  `;
+  
+  let texts=[
+    "Everything looks normal.",
+    "Wait... did that text move?",
+    "System Error Detected.",
+    "Reality is breaking...",
+    "YOU SHOULD NOT BE HERE.",
+    "Can you fix the system?"
+  ];
+
+  let index=0;
+
+  let interval=setInterval(()=>{
+    document.body.style.background=
+      index%2==0?"black":"darkred";
+    document.getElementById("glitchText").innerText=texts[index];
+    index++;
+    if(index>=texts.length){
+      clearInterval(interval);
+      gameArea.innerHTML+=`<br><button onclick="location.reload()">Escape Reality</button>`;
+    }
+  },1000);
+}
+
+//////////////////// MIND READER ////////////////////
+
+function startMindReader(){
+  gameArea.innerHTML=`
+  <h2>🧠 Mind Reader</h2>
+  <p>Think of a number between 1 and 50.</p>
+  <button onclick="guessNumber()">Ready</button>
+  <p id="mindResult"></p>
+  `;
+}
+
+function guessNumber(){
+  let fakeGuess=Math.floor(Math.random()*50)+1;
+  document.getElementById("mindResult").innerText=
+  "I sense your number is... "+fakeGuess+" 😎";
+}
+
+//////////////////// IMPOSSIBLE ////////////////////
+
+function startImpossible(){
+  gameArea.innerHTML=`
+  <h2>🚫 Don't Click The Button</h2>
+  <button id="impossibleBtn">Do NOT Click</button>
+  `;
+
+  const btn=document.getElementById("impossibleBtn");
+
+  btn.addEventListener("mouseover",()=>{
+    let x=Math.random()*window.innerWidth-100;
+    let y=Math.random()*window.innerHeight-100;
+    btn.style.left=x+"px";
+    btn.style.top=y+"px";
+  });
+
+  btn.addEventListener("click",()=>{
+    document.body.style.background="white";
+    document.body.style.color="black";
+    gameArea.innerHTML="<h2>You clicked it. Chaos Wins 😈</h2><button onclick='location.reload()'>Restart</button>";
+  });
+}
+
+</script>
+<!-- CHAOS UPGRADE PACK START -->
+<style>
+
+.glitch-text{
+  animation: glitch 0.2s infinite alternate;
+}
+
+@keyframes glitch{
+  from { transform: translate(2px, -2px); }
+  to { transform: translate(-2px, 2px); }
+}
+
+#hackerScreen{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:black;
+  color:lime;
+  font-family:monospace;
+  padding:20px;
+  display:none;
+  overflow:auto;
+  z-index:9999;
+}
+
+</style>
+
+
+<script>
+
+//////////////////// CURSOR GLITCH ////////////////////
+
+let cursorGlitchActive = false;
+
+function activateCursorGlitch(){
+  if(cursorGlitchActive) return;
+  cursorGlitchActive = true;
+
+  document.addEventListener("mousemove", glitchMove);
+}
+
+function glitchMove(e){
+  document.body.style.cursor = "none";
+
+  let dot = document.createElement("div");
+  dot.style.position="fixed";
+  dot.style.left=e.clientX+"px";
+  dot.style.top=e.clientY+"px";
+  dot.style.width="5px";
+  dot.style.height="5px";
+  dot.style.background="red";
+  dot.style.pointerEvents="none";
+  dot.style.zIndex="9999";
+
+  document.body.appendChild(dot);
+
+  setTimeout(()=>dot.remove(),100);
+}
+
+//////////////////// TEXT DISTORT ////////////////////
+
+function distortText(){
+  let allText = document.querySelectorAll("p,h1,h2,h3,span");
+
+  allText.forEach(el=>{
+    el.classList.add("glitch-text");
+  });
+}
+
+//////////////////// SECRET CODE ////////////////////
+
+let secretInput = "";
+
+document.addEventListener("keydown", function(e){
+  secretInput += e.key;
+  if(secretInput.includes("chaos")){
+    activateHackerMode();
+    secretInput="";
+  }
+  if(secretInput.length > 20){
+    secretInput = secretInput.slice(-20);
+  }
+});
+//////////////////// AUTO CHAOS TRIGGER ////////////////////
+
+setTimeout(()=>{
+  distortText();
+},15000);
+
+setTimeout(()=>{
+  activateCursorGlitch();
+},25000);
+
+</script>
+<!-- CHAOS UPGRADE PACK END -->
+
+</body>
+</html>
+<button onclick="activateHackerMode()">Hacking Mode</button>
+<style>
+
+#hackerScreen{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:black;
+  color:lime;
+  font-family:monospace;
+  padding:20px;
+  display:none;
+  overflow:auto;
+  z-index:99999;
+}
+
+.shake{
+  animation: shake 0.2s infinite;
+}
+
+@keyframes shake{
+  0%{transform:translate(2px,2px);}
+  25%{transform:translate(-2px,2px);}
+  50%{transform:translate(2px,-2px);}
+  75%{transform:translate(-2px,-2px);}
+  100%{transform:translate(0,0);}
+}
+
+</style>
+
+<div id="hackerScreen"></div>
+
+<script>
+
+function randomIP(){
+  return Math.floor(Math.random()*255)+"."+
+         Math.floor(Math.random()*255)+"."+
+         Math.floor(Math.random()*255)+"."+
+         Math.floor(Math.random()*255);
+}
+
+function randomCodeLine(){
+  const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let line="";
+  for(let i=0;i<60;i++){
+    line+=chars[Math.floor(Math.random()*chars.length)];
+  }
+  return line;
+}
+
+function activateHackerMode(){
+
+  let screen=document.getElementById("hackerScreen");
+  screen.style.display="block";
+  screen.innerHTML="";
+  document.body.classList.add("shake");
+
+  let ip=randomIP();
+
+  let introLines=[
+    "Establishing secure connection...",
+    "Target IP detected: "+ip,
+    "Bypassing firewall...",
+    "Decrypting system files...",
+    "Injecting cyber payload...",
+    "WARNING: System Integrity Compromised ⚠"
+  ];
+
+  let i=0;
+
+  let intro=setInterval(()=>{
+    screen.innerHTML+=introLines[i]+"<br>";
+    screen.scrollTop=screen.scrollHeight;
+    i++;
+    if(i>=introLines.length){
+      clearInterval(intro);
+      startCodeRain();
+      startCountdown();
+    }
+  },800);
+}
+
+function startCodeRain(){
+  let screen=document.getElementById("hackerScreen");
+
+  let rain=setInterval(()=>{
+    screen.innerHTML+=randomCodeLine()+"<br>";
+    screen.scrollTop=screen.scrollHeight;
+  },100);
+
+  screen.dataset.rainInterval=rain;
+}
+
+function startCountdown(){
+  let screen=document.getElementById("hackerScreen");
+  let countdown=10;
+
+  let timer=setInterval(()=>{
+    screen.innerHTML+="<br>System Lock In: "+countdown+"s";
+    screen.scrollTop=screen.scrollHeight;
+    countdown--;
+
+    if(countdown<0){
+      clearInterval(timer);
+      clearInterval(screen.dataset.rainInterval);
+
+      screen.innerHTML+="<br><br>🔒 SYSTEM LOCKED 🔒";
+      screen.innerHTML+="<br><button onclick='exitHackerMode()'>Exit System</button>";
+      document.body.classList.remove("shake");
+    }
+  },1000);
+}
+
+function exitHackerMode(){
+  let screen=document.getElementById("hackerScreen");
+  screen.style.display="none";
+  screen.innerHTML="";
+  document.body.classList.remove("shake");
+}
+
+</script>
+<button onclick="show('chaos')">🚨 Chaos Mode</button>
+<!-- CYBER CHAOS MODE -->
+<div id="chaos" class="section">
+  <h2 style="color:red;">⚠ SYSTEM BREACH DETECTED ⚠</h2>
+  <button onclick="startChaos()">Activate Chaos Mode</button>
+  <div id="chaosScreen" style="background:black;color:red;height:250px;overflow:auto;padding:10px;text-align:left;"></div>
+  <h3 id="countdown"></h3>
+</div>
+
+<script>
+function startChaos(){
+  let screen=document.getElementById("chaosScreen");
+  let count=document.getElementById("countdown");
+  screen.innerHTML="";
+  
+  let lines=[
+    "Scanning your IP address...",
+    "IP Found: 192.168.0."+Math.floor(Math.random()*255),
+    "Accessing webcam...",
+    "Injecting malware...",
+    "System files corrupted...",
+    "WARNING: Virus spreading...",
+    "Encrypting data...",
+    "SELF DESTRUCT SEQUENCE INITIATED"
+  ];
+
+  let i=0;
+  let interval=setInterval(()=>{
+    if(i<lines.length){
+      screen.innerHTML+=lines[i]+"<br>";
+      screen.scrollTop=screen.scrollHeight;
+      i++;
+    }else{
+      clearInterval(interval);
+      startCountdown();
+    }
+  },800);
+}
+
+function startCountdown(){
+  let count=document.getElementById("countdown");
+  let time=10;
+  let timer=setInterval(()=>{
+    count.innerHTML="💣 Self Destruct in: "+time+"s";
+    time--;
+    if(time<0){
+      clearInterval(timer);
+      document.body.style.background="black";
+      document.body.innerHTML="<h1 style='color:red;text-align:center;margin-top:100px;'>💀 SYSTEM DESTROYED 💀</h1>";
+    }
+  },1000);
+}
+</script>
+<button onclick="show('darkweb')">🕶 Dark Web</button>
+<!-- DARK WEB SYSTEM -->
+<div id="darkweb" class="section">
+  <h2 style="color:#00ff00;">🕶 Dark Web Control Panel</h2>
+
+  <div style="display:flex; gap:20px; flex-wrap:wrap;">
+
+    <div style="flex:1; min-width:250px; background:black; padding:10px; border:1px solid #00ff00;">
+      <h3>System Status</h3>
+      <p>Firewall: ACTIVE</p>
+      <p>Encryption: AES-256</p>
+      <p>Access Level: ROOT</p>
+      <button onclick="activateProtocol()">Activate Protocol</button>
+      <button onclick="scanServers()">Scan Servers</button>
+    </div>
+
+    <div style="flex:2; min-width:300px; background:black; padding:10px; border:1px solid #00ff00;">
+      <h3>Terminal</h3>
+      <div id="darkTerminal" style="height:200px; overflow:auto; text-align:left; color:#00ff00;"></div>
+    </div>
+
+  </div>
+</div>

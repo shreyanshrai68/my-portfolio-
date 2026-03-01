@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Typing Master Ultimate</title>
+<style>
+body{
+  font-family: Arial;
+  background: linear-gradient(135deg,#1e3c72,#2a5298);
+  color:white;
+  text-align:center;
+  padding:20px;
+}
+
+.container{
+  background:white;
+  color:black;
+  max-width:800px;
+  margin:auto;
+  padding:20px;
+  border-radius:15px;
+}
+
+#paragraph span.correct{color:green;}
+#paragraph span.wrong{color:red;}
+
+textarea{
+  width:100%;
+  height:100px;
+  font-size:16px;
+  padding:10px;
+  margin-top:10px;
+}
+
+button,select{
+  padding:8px 15px;
+  margin:5px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+#progressBar{
+  width:100%;
+  height:10px;
+  background:#ccc;
+  margin:10px 0;
+  border-radius:5px;
+}
+
+#progress{
+  height:10px;
+  width:0%;
+  background:green;
+  border-radius:5px;
+}
+
+table{
+  width:100%;
+  margin-top:10px;
+  border-collapse:collapse;
+}
+td,th{
+  border:1px solid #ccc;
+  padding:5px;
+}
+</style>
+</head>
+<body>
+
+<h1>⚡ Typing Master Ultimate ⚡</h1>
+
+<div class="container">
+
+Mode:
+<select id="mode">
+<option value="single">Single Player</option>
+<option value="multi">2 Player</option>
+</select>
+
+Level:
+<select id="level">
+<option value="easy">Easy</option>
+<option value="medium">Medium</option>
+<option value="hard">Hard</option>
+</select>
+
+<p id="playerTurn"></p>
+<p id="timer">Time: 30</p>
+
+<div id="progressBar"><div id="progress"></div></div>
+
+<div id="paragraph"></div>
+
+<textarea id="inputText" disabled></textarea><br>
+
+<button onclick="startTest()">Start</button>
+<button onclick="restartTest()">Restart</button>
+
+<p id="result"></p>
+<p id="rank"></p>
+
+<h3>🏆 Leaderboard</h3>
+<table>
+<thead><tr><th>Name</th><th>WPM</th></tr></thead>
+<tbody id="leaderboard"></tbody>
+</table>
+
+</div>
+
+<script>
+let timeLeft=30;
+let timer;
+let currentText="";
+let currentPlayer=1;
+let xp=0;
+
+const paragraphs={
+easy:[
+"Practice daily.",
+"Typing improves speed.",
+"Stay focused."
+],
+medium:[
+"Consistency beats motivation every time.",
+"Hard work creates successful students."
+],
+hard:[
+"Discipline and persistence create unstoppable champions in life.",
+"Your future is built by your daily habits and focused actions."
+]
+};
+
+const paragraphEl=document.getElementById("paragraph");
+const inputText=document.getElementById("inputText");
+
+function loadParagraph(){
+  let level=document.getElementById("level").value;
+  let arr=paragraphs[level];
+  currentText=arr[Math.floor(Math.random()*arr.length)];
+  paragraphEl.innerHTML="";
+  currentText.split("").forEach(c=>{
+    let span=document.createElement("span");
+    span.innerText=c;
+    paragraphEl.appendChild(span);
+  });
+}
+
+inputText.addEventListener("input",function(){
+  let typed=inputText.value.split("");
+  let spans=paragraphEl.querySelectorAll("span");
+  spans.forEach((span,index)=>{
+    if(typed[index]==null){
+      span.classList.remove("correct","wrong");
+    }
+    else if(typed[index]===span.innerText){
+      span.classList.add("correct");
+      span.classList.remove("wrong");
+    }
+    else{
+      span.classList.add("wrong");
+      span.classList.remove("correct");
+    }
+  });
+
+  let percent=(typed.length/currentText.length)*100;
+  document.getElementById("progress").style.width=percent+"%";
+});
+
+function startTest(){
+  timeLeft=30;
+  inputText.value="";
+  inputText.disabled=false;
+  inputText.focus();
+  loadParagraph();
+  document.getElementById("timer").innerText="Time: "+timeLeft;
+
+  if(document.getElementById("mode").value==="multi"){
+    document.getElementById("playerTurn").innerText="Player "+currentPlayer+" Turn";
+  } else {
+    document.getElementById("playerTurn").innerText="";
+  }
+
+  timer=setInterval(()=>{
+    timeLeft--;
+    document.getElementById("timer").innerText="Time: "+timeLeft;
+    if(timeLeft<=0){
+      clearInterval(timer);
+      endTest();
+    }
+  },1000);
+}
+
+function endTest(){
+  inputText.disabled=true;
+
+  let typed=inputText.value;
+  let correct=0;
+
+  for(let i=0;i<typed.length;i++){
+    if(typed[i]===currentText[i]) correct++;
+  }
+
+  let accuracy=Math.round((correct/currentText.length)*100);
+  let words=typed.trim()===""?0:typed.trim().split(/\s+/).length;
+  let wpm=Math.round((words/30)*60);
+
+  let medal="🥉";
+  if(wpm>40) medal="🥈";
+  if(wpm>60) medal="🥇";
+
+  xp+=wpm;
+  let rank="Beginner";
+  if(xp>200) rank="Intermediate";
+  if(xp>500) rank="Pro";
+  if(xp>1000) rank="Master";
+
+  document.getElementById("result").innerHTML=
+  "Speed: "+wpm+" WPM | Accuracy: "+accuracy+"% | Medal: "+medal;
+
+  document.getElementById("rank").innerText="XP: "+xp+" | Rank: "+rank;
+
+  saveScore("Player "+currentPlayer,wpm);
+
+  if(document.getElementById("mode").value==="multi"){
+    currentPlayer=currentPlayer===1?2:1;
+  }
+}
+
+function restartTest(){
+  clearInterval(timer);
+  inputText.value="";
+  inputText.disabled=true;
+  document.getElementById("progress").style.width="0%";
+  document.getElementById("timer").innerText="Time: 30";
+  document.getElementById("result").innerText="";
+  loadParagraph();
+}
+
+function saveScore(name,wpm){
+  let scores=JSON.parse(localStorage.getItem("scores"))||[];
+  scores.push({name,wpm});
+  scores.sort((a,b)=>b.wpm-a.wpm);
+  scores=scores.slice(0,5);
+  localStorage.setItem("scores",JSON.stringify(scores));
+  displayLeaderboard();
+}
+
+function displayLeaderboard(){
+  let scores=JSON.parse(localStorage.getItem("scores"))||[];
+  let board=document.getElementById("leaderboard");
+  board.innerHTML="";
+  scores.forEach(s=>{
+    let row="<tr><td>"+s.name+"</td><td>"+s.wpm+"</td></tr>";
+    board.innerHTML+=row;
+  });
+}
+
+window.onload=function(){
+  loadParagraph();
+  displayLeaderboard();
+};
+</script>
+
+</body>
+</html>
