@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<meta charset="UTF-8">
+<title>QuickCab Elite</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#0f0f0f;
+color:white;
+text-align:center;
+}
+
+header{
+background:black;
+padding:15px;
+font-size:22px;
+font-weight:bold;
+}
+
+.container{
+max-width:420px;
+margin:20px auto;
+background:#1c1c1c;
+padding:20px;
+border-radius:12px;
+display:none;
+}
+
+input,select,button{
+width:100%;
+padding:10px;
+margin:8px 0;
+border:none;
+border-radius:6px;
+}
+
+button{
+background:yellow;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{
+background:orange;
+}
+
+.active{display:block}
+#map{
+height:350px;
+margin:10px;
+border-radius:10px;
+}
+
+#map{
+height:200px;
+border-radius:10px;
+margin:10px 0;
+}
+
+.road{
+width:100%;
+height:6px;
+background:#333;
+margin-top:20px;
+position:relative;
+border-radius:5px;
+}
+
+.cab{
+width:30px;
+height:20px;
+background:yellow;
+position:absolute;
+top:-7px;
+border-radius:4px;
+animation:move 5s linear forwards;
+}
+
+@keyframes move{
+from{left:0}
+to{left:90%}
+}
+</style>
+</head>
+
+<body>
+    <div id="map"></div>
+
+<header>🚖 QuickCab Elite</header>
+
+<div class="container active" id="booking">
+
+<h3>Book Ride</h3>
+
+<div id="map"></div>
+
+<input type="text" id="pickup" placeholder="Pickup Location">
+<input type="text" id="drop" placeholder="Drop Location">
+
+<select id="cab">
+<option value="10">Mini (₹10/km)</option>
+<option value="15">Sedan (₹15/km)</option>
+<option value="20">SUV (₹20/km)</option>
+</select>
+
+<button onclick="calculateFare()">Calculate Fare</button>
+
+<h3 id="fare"></h3>
+
+<input type="number" id="phone" placeholder="Phone Number">
+<button onclick="sendOTP()">Send OTP</button>
+
+</div>
+
+<div class="container" id="otpSection">
+<h3>Enter OTP</h3>
+<input type="number" id="otpInput" placeholder="Enter OTP">
+<button onclick="verifyOTP()">Verify & Start Ride</button>
+</div>
+
+<div class="container" id="tracking">
+<h3>🚘 Ride in Progress</h3>
+<div class="road">
+<div class="cab"></div>
+</div>
+<p>Driver is on the way...</p>
+</div>
+
+<script>
+let generatedOTP;
+let distance = Math.floor(Math.random()*10)+1; // random 1–10 km
+
+function calculateFare(){
+let rate=document.getElementById("cab").value;
+let total=rate*distance;
+document.getElementById("fare").innerHTML=
+"Distance: "+distance+" km <br> Total Fare: ₹"+total;
+}
+
+function sendOTP(){
+let phone=document.getElementById("phone").value;
+if(!phone){
+alert("Enter phone number");
+return;
+}
+generatedOTP=Math.floor(1000+Math.random()*9000);
+alert("Demo OTP: "+generatedOTP); // demo only
+show("otpSection");
+}
+
+function verifyOTP(){
+let entered=document.getElementById("otpInput").value;
+if(entered==generatedOTP){
+alert("OTP Verified!");
+show("tracking");
+}else{
+alert("Wrong OTP");
+}
+}
+
+function show(id){
+document.querySelectorAll(".container").forEach(c=>c.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+}
+</script>
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<style>
+#map {
+height: 250px;
+border-radius: 10px;
+margin: 10px 0;
+}
+</style>
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<style>
+#map {
+height: 300px;
+border-radius: 10px;
+margin: 10px 0;
+}
+</style>
+
+<div id="map"></div>
+<h3 id="timer"></h3>
+
+<h3>Wallet Balance: ₹<span id="wallet">1000</span></h3>
+
+<button onclick="completeRide()">Complete Ride</button>
+
+<div id="ratingSection" style="display:none;">
+<h3>Rate Driver</h3>
+<select id="rating">
+<option value="5">⭐⭐⭐⭐⭐</option>
+<option value="4">⭐⭐⭐⭐</option>
+<option value="3">⭐⭐⭐</option>
+<option value="2">⭐⭐</option>
+<option value="1">⭐</option>
+</select>
+<button onclick="submitRating()">Submit Rating</button>
+</div>
+
+<h3>Ride History</h3>
+<div id="history"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+var map = L.map('map').setView([20, 78], 5); // India default
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+}).addTo(map);
+
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+
+        var lat = position.coords.latitude;
+        var lon = position.coords.longitude;
+
+        map.setView([lat, lon], 15);
+
+        L.marker([lat, lon]).addTo(map)
+            .bindPopup("📍 You are here")
+            .openPopup();
+
+    }, function() {
+        alert("Location permission denied!");
+    });
+} else {
+    alert("Geolocation not supported by this browser.");
+}
+</script>
+</style>
+
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+var map = L.map('map').setView([25.3176, 82.9739], 13); // Varanasi example
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+}).addTo(map);
+
+var marker = L.marker([25.3176, 82.9739]).addTo(map)
+    .bindPopup("Pickup Location")
+    .openPopup();
+</script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+let map = L.map('map').setView([20,78],5);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+attribution:'© OpenStreetMap'
+}).addTo(map);
+
+let pickup=null;
+let drop=null;
+let pickupMarker, dropMarker, routeLine;
+let distanceKm=0;
+
+map.on("click", function(e){
+
+if(!pickup){
+pickup = e.latlng;
+pickupMarker = L.marker(pickup).addTo(map).bindPopup("Pickup").openPopup();
+alert("Pickup Selected. Now select Drop.");
+}
+else if(!drop){
+drop = e.latlng;
+dropMarker = L.marker(drop).addTo(map).bindPopup("Drop").openPopup();
+drawRoute();
+calculateDistance();
+}
+});
+
+function drawRoute(){
+routeLine = L.polyline([pickup, drop], {color:"yellow"}).addTo(map);
+map.fitBounds(routeLine.getBounds());
+}
+
+function calculateDistance(){
+let R = 6371;
+let dLat = (drop.lat-pickup.lat)*Math.PI/180;
+let dLon = (drop.lng-pickup.lng)*Math.PI/180;
+
+let a =
+Math.sin(dLat/2)*Math.sin(dLat/2) +
+Math.cos(pickup.lat*Math.PI/180) *
+Math.cos(drop.lat*Math.PI/180) *
+Math.sin(dLon/2)*Math.sin(dLon/2);
+
+let c = 2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+distanceKm = (R*c).toFixed(2);
+
+let rate = document.getElementById("cabType").value;
+let total = (distanceKm * rate).toFixed(2);
+
+document.getElementById("fare").innerHTML =
+"Distance: "+distanceKm+" km | Fare: ₹"+total;
+}
+let timerInterval;
+let seconds = 0;
+let wallet = localStorage.getItem("wallet") || 1000;
+document.getElementById("wallet").innerText = wallet;
+
+function startRide(){
+if(!pickup || !drop){
+alert("Select pickup and drop first!");
+return;
+}
+
+startTimer();
+}
+
+function startTimer(){
+seconds = 0;
+timerInterval = setInterval(()=>{
+seconds++;
+document.getElementById("timer").innerText =
+"Ride Time: " + seconds + " sec";
+},1000);
+}
+
+function completeRide(){
+clearInterval(timerInterval);
+
+let rate = document.getElementById("cabType").value;
+let fareAmount = (distanceKm * rate).toFixed(2);
+
+wallet -= fareAmount;
+if(wallet < 0){
+alert("Insufficient Wallet Balance!");
+wallet += fareAmount;
+return;
+}
+
+localStorage.setItem("wallet", wallet);
+document.getElementById("wallet").innerText = wallet;
+
+saveHistory(fareAmount);
+document.getElementById("ratingSection").style.display="block";
+}
+
+function submitRating(){
+let rating = document.getElementById("rating").value;
+alert("Thanks for rating: " + rating + " ⭐");
+document.getElementById("ratingSection").style.display="none";
+}
+
+function saveHistory(fareAmount){
+let history = JSON.parse(localStorage.getItem("rideHistory")) || [];
+
+let rideData = {
+distance: distanceKm,
+fare: fareAmount,
+date: new Date().toLocaleString()
+};
+
+history.push(rideData);
+localStorage.setItem("rideHistory", JSON.stringify(history));
+
+loadHistory();
+}
+
+function loadHistory(){
+let history = JSON.parse(localStorage.getItem("rideHistory")) || [];
+let output="";
+history.forEach(r=>{
+output += `
+<div style="background:#333;padding:8px;margin:5px;border-radius:5px;">
+📅 ${r.date}<br>
+📏 ${r.distance} km<br>
+💰 ₹${r.fare}
+</div>
+`;
+});
+document.getElementById("history").innerHTML = output;
+}
+
+loadHistory();
+</script>
+</body>
+</html>
