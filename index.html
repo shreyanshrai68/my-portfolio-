@@ -177,3 +177,36 @@ if(pos<window.innerHeight-100){b.classList.add('show');}
 
   </div>
 </section>
+<button onclick="speakMotivation()" style="
+padding:12px 20px;
+background:#00e0ff;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+">
+🎧 Get Motivation
+</button>
+<script>
+function speakMotivation(){
+
+const text = "You are stronger than you think. Every small step you take today is building your future. Stay consistent, stay focused, and never give up.";
+
+const speech = new SpeechSynthesisUtterance(text);
+
+// Voice settings
+speech.rate = 0.9;   // slow calm speed
+speech.pitch = 1;    // normal pitch
+speech.volume = 1;
+
+// Female voice select (auto)
+const voices = speechSynthesis.getVoices();
+const femaleVoice = voices.find(v => v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("zira") || v.name.toLowerCase().includes("google"));
+
+if(femaleVoice){
+    speech.voice = femaleVoice;
+}
+
+speechSynthesis.speak(speech);
+}
+</script>
