@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Ultimate Jarvis AI</title>
+
+<style>
+
+body{
+background:#050505;
+color:#00f7ff;
+font-family:Arial;
+text-align:center;
+}
+
+h1{
+font-size:65px;
+margin-top:60px;
+text-shadow:0 0 25px cyan;
+}
+
+.ring{
+width:250px;
+height:250px;
+border:6px solid cyan;
+border-radius:50%;
+margin:40px auto;
+animation:spin 6s linear infinite;
+box-shadow:0 0 60px cyan;
+}
+
+@keyframes spin{
+0%{transform:rotate(0deg);}
+100%{transform:rotate(360deg);}
+}
+
+button{
+padding:15px 30px;
+font-size:20px;
+border:none;
+background:cyan;
+border-radius:10px;
+cursor:pointer;
+}
+
+input{
+padding:10px;
+font-size:18px;
+width:300px;
+margin-top:20px;
+}
+
+#output{
+margin-top:30px;
+font-size:24px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>JARVIS AI</h1>
+
+<div class="ring"></div>
+
+<button onclick="startJarvis()">Start Jarvis</button>
+
+<br>
+
+<input id="textCommand" placeholder="Type command...">
+<button onclick="runText()">Run</button>
+
+<div id="output">Jarvis Ready...</div>
+
+<script>
+
+let recognition;
+
+function speak(text){
+
+let speech = new SpeechSynthesisUtterance(text);
+speech.lang="en-US";
+window.speechSynthesis.speak(speech);
+
+}
+
+function startJarvis(){
+
+recognition = new(window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+recognition.lang="en-US";
+recognition.continuous=true;
+
+recognition.start();
+
+recognition.onresult=function(event){
+
+let command = event.results[event.results.length-1][0].transcript.toLowerCase();
+
+runCommand(command);
+
+}
+
+}
+
+function runText(){
+
+let command = document.getElementById("textCommand").value.toLowerCase();
+
+runCommand(command);
+
+}
+
+function runCommand(command){
+
+document.getElementById("output").innerHTML="Command: "+command;
+
+if(command.includes("hello")){
+
+speak("Hello, I am Jarvis");
+
+}
+
+else if(command.includes("time")){
+
+let time=new Date().toLocaleTimeString();
+speak("The time is "+time);
+
+}
+
+else if(command.includes("date")){
+
+let date=new Date().toDateString();
+speak("Today's date is "+date);
+
+}
+
+else if(command.includes("open google")){
+
+window.open("https://google.com");
+speak("Opening Google");
+
+}
+
+else if(command.includes("open youtube")){
+
+window.open("https://youtube.com");
+speak("Opening YouTube");
+
+}
+
+else if(command.includes("search")){
+
+let q=command.replace("search","");
+window.open("https://www.google.com/search?q="+q);
+speak("Searching "+q);
+
+}
+
+else if(command.includes("youtube")){
+
+let q=command.replace("youtube","");
+window.open("https://www.youtube.com/results?search_query="+q);
+speak("Playing "+q);
+
+}
+
+else if(command.includes("wikipedia")){
+
+let q=command.replace("wikipedia","");
+window.open("https://en.wikipedia.org/wiki/"+q);
+speak("Opening Wikipedia");
+
+}
+
+else if(command.includes("battery")){
+
+navigator.getBattery().then(function(battery){
+
+let level=battery.level*100;
+
+speak("Battery level is "+level+" percent");
+
+});
+
+}
+
+else{
+
+speak("Sorry I did not understand");
+
+}
+
+}
+
+</script>
+
+
+
+</body>
+</html>

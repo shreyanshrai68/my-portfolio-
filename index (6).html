@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TruthTrap Clean Edition</title>
+
+<style>
+body{
+margin:0;
+background:black;
+color:#00ffcc;
+font-family:Arial;
+text-align:center;
+overflow-x:hidden;
+}
+
+header{
+padding:20px;
+background:#111;
+}
+
+section{
+padding:30px 15px;
+border-bottom:1px solid #222;
+}
+
+button,input{
+padding:10px;
+margin:8px;
+width:90%;
+max-width:400px;
+background:#111;
+border:1px solid #00ffcc;
+color:#00ffcc;
+}
+
+button{
+background:#00ffcc;
+color:black;
+font-weight:bold;
+cursor:pointer;
+}
+
+.statement{
+margin:10px auto;
+padding:12px;
+max-width:500px;
+border:1px solid #00ffcc;
+cursor:pointer;
+background:#111;
+transition:0.3s;
+}
+
+.statement:hover{
+background:#003333;
+}
+
+.hidden{display:none;}
+
+.timer{
+color:red;
+font-size:20px;
+}
+
+#spotlight{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+pointer-events:none;
+background:radial-gradient(circle at center, transparent 120px, rgba(0,0,0,0.9) 350px);
+animation:moveLight 6s infinite alternate;
+}
+
+@keyframes moveLight{
+0%{background:radial-gradient(circle at 30% 40%, transparent 120px, rgba(0,0,0,0.9) 350px);}
+100%{background:radial-gradient(circle at 70% 60%, transparent 120px, rgba(0,0,0,0.9) 350px);}
+}
+.card{
+background:#111;
+padding:20px;
+margin:15px auto;
+max-width:500px;
+border-radius:8px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="spotlight"></div>
+
+<header>
+<h1>TruthTrap</h1>
+<p>Digital Lie Detector Arena</p>
+</header>
+
+<section>
+<h2>AI Generate Statements</h2>
+<button onclick="autoGenerate()">Generate 5 Statements</button>
+<div id="gameArea"></div>
+<div class="timer hidden" id="timer">30</div>
+</section>
+
+<section class="hidden" id="resultSection">
+<h2>Result</h2>
+<div id="result"></div>
+<div id="analysis"></div>
+<button onclick="resetGame()">Play Again</button>
+</section>
+
+<section>
+<h2>Leaderboard (Top 5)</h2>
+<div id="leaderboard"></div>
+</section>
+
+<script>
+
+let statements=[];
+let lieText="";
+let timeLeft=30;
+let timerInterval;
+
+function autoGenerate(){
+
+statements=[
+"I have broken a phone accidentally",
+"I once lied to avoid homework",
+"I hate music completely",
+"I can stay awake all night coding",
+"I secretly enjoy spicy food"
+];
+
+// random lie
+lieText=statements[Math.floor(Math.random()*statements.length)];
+
+startGame();
+}
+
+function startGame(){
+
+document.getElementById("resultSection").classList.add("hidden");
+
+let area=document.getElementById("gameArea");
+area.innerHTML="";
+document.getElementById("timer").classList.remove("hidden");
+
+let shuffled=[...statements].sort(()=>Math.random()-0.5);
+
+shuffled.forEach(text=>{
+let div=document.createElement("div");
+div.className="statement";
+div.innerText=text;
+div.onclick=()=>checkAnswer(text);
+area.appendChild(div);
+});
+
+timeLeft=30;
+document.getElementById("timer").innerText=timeLeft;
+
+timerInterval=setInterval(()=>{
+timeLeft--;
+document.getElementById("timer").innerText=timeLeft;
+if(timeLeft<=0){
+clearInterval(timerInterval);
+endGame(false);
+}
+},1000);
+}
+
+function checkAnswer(selected){
+clearInterval(timerInterval);
+if(selected===lieText){
+let score=100+timeLeft*2;
+endGame(true,score);
+}else{
+endGame(false,0);
+}
+}
+
+function endGame(correct,score=0){
+
+document.getElementById("gameArea").innerHTML="";
+document.getElementById("timer").classList.add("hidden");
+document.getElementById("resultSection").classList.remove("hidden");
+
+if(correct){
+document.getElementById("result").innerHTML=
+"<div class='card'>Correct! Lie detected.<br>Score: "+score+"</div>";
+saveScore(score);
+}else{
+document.getElementById("result").innerHTML=
+"<div class='card'>Wrong! Lie was:<br>"+lieText+"<br>Score: 0</div>";
+saveScore(0);
+}
+
+psychologicalAnalysis();
+loadLeaderboard();
+}
+
+function psychologicalAnalysis(){
+
+let difficulty="Easy 🟢";
+let length=lieText.length;
+
+if(length>60) difficulty="Mastermind 🔴";
+else if(length>30) difficulty="Medium 🟡";
+
+document.getElementById("analysis").innerHTML=
+"<div class='card'>Lie Difficulty: "+difficulty+
+"<br>Pattern: You hide lies inside normal sounding statements."+
+"<br>Psychology: Subtle deception detected.</div>";
+}
+
+function saveScore(score){
+let scores=JSON.parse(localStorage.getItem("scores"))||[];
+scores.push(score);
+scores.sort((a,b)=>b-a);
+scores=scores.slice(0,5);
+localStorage.setItem("scores",JSON.stringify(scores));
+}
+
+function loadLeaderboard(){
+let scores=JSON.parse(localStorage.getItem("scores"))||[];
+let html="<div class='card'>";
+scores.forEach((s,i)=>{
+html+="<p>#"+(i+1)+" - "+s+" pts</p>";
+});
+html+="</div>";
+document.getElementById("leaderboard").innerHTML=html;
+}
+
+function resetGame(){
+document.getElementById("resultSection").classList.add("hidden");
+document.getElementById("gameArea").innerHTML="";
+}
+
+loadLeaderboard();
+
+</script>
+
+</body>
+</html>
