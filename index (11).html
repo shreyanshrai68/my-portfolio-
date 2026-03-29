@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Garden - Memory Blooms</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .garden {
+            perspective: 1200px;
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .flower-container {
+            height: 300px;
+            perspective: 1000px;
+        }
+
+        .flower {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 50px auto;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease-out;
+        }
+
+        .flower.bloomed {
+            animation: bloom 1s ease-out forwards;
+        }
+
+        .flower.expanded {
+            transform: scale(1.5) rotateY(0deg);
+        }
+
+        .petal {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle at 30% 30%, #ff6b9d, #c44569);
+            border-radius: 50%;
+            transform-origin: 100px 100px;
+            opacity: 0;
+        }
+
+        .petal:nth-child(1) {
+            animation: petalBurst 0.8s ease-out forwards 0s;
+            transform: rotateZ(0deg) translate3d(0, -80px, 50px);
+        }
+
+        .petal:nth-child(2) {
+            animation: petalBurst 0.8s ease-out forwards 0.1s;
+            transform: rotateZ(60deg) translate3d(0, -80px, 50px);
+        }
+
+        .petal:nth-child(3) {
+            animation: petalBurst 0.8s ease-out forwards 0.2s;
+            transform: rotateZ(120deg) translate3d(0, -80px, 50px);
+        }
+
+        .petal:nth-child(4) {
+            animation: petalBurst 0.8s ease-out forwards 0.3s;
+            transform: rotateZ(180deg) translate3d(0, -80px, 50px);
+        }
+
+        .petal:nth-child(5) {
+            animation: petalBurst 0.8s ease-out forwards 0.4s;
+            transform: rotateZ(240deg) translate3d(0, -80px, 50px);
+        }
+
+        .petal:nth-child(6) {
+            animation: petalBurst 0.8s ease-out forwards 0.5s;
+            transform: rotateZ(300deg) translate3d(0, -80px, 50px);
+        }
+
+        .center {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle at 40% 40%, #ffd700, #ffb700);
+            border-radius: 50%;
+            top: 75px;
+            left: 75px;
+            z-index: 10;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
+        }
+
+        .memory-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            opacity: 0;
+            z-index: -1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;
+            transition: opacity 0.3s ease-out;
+        }
+
+        .flower.expanded .memory-card {
+            opacity: 1;
+            z-index: 20;
+        }
+
+        .memory-card img {
+            width: 100%;
+            height: 60%;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .memory-card .text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        @keyframes bloom {
+            0% {
+                transform: scale(0) rotateY(0deg);
+            }
+            100% {
+                transform: scale(1) rotateY(360deg);
+            }
+        }
+
+        @keyframes petalBurst {
+            0% {
+                opacity: 0;
+                transform: translate3d(0, 0, 0) rotateX(0deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translate3d(var(--tx), var(--ty), 50px) rotateX(45deg);
+            }
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .controls input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .controls textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            font-size: 14px;
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .controls button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .controls button:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <h1>🌸 Digital Garden - Memory Blooms 🌸</h1>
+    
+    <div class="garden" id="garden"></div>
+
+    <div class="controls">
+        <input type="text" id="memoryTitle" placeholder="Memory title...">
+        <textarea id="memoryText" placeholder="Write your memory..."></textarea>
+        <input type="file" id="memoryImage" accept="image/*">
+        <button onclick="addMemory()">Add Memory Bloom</button>
+    </div>
+
+    <script>
+        let memories = JSON.parse(localStorage.getItem('memories')) || [];
+
+        function addMemory() {
+            const title = document.getElementById('memoryTitle').value;
+            const text = document.getElementById('memoryText').value;
+            const imageInput = document.getElementById('memoryImage');
+
+            if (!title && !text) {
+                alert('Please add some content to your memory!');
+                return;
+            }
+
+            const reader = new FileReader();
+            if (imageInput.files.length > 0) {
+                reader.onload = (e) => {
+                    memories.push({
+                        id: Date.now(),
+                        title,
+                        text,
+                        image: e.target.result
+                    });
+                    saveAndRender();
+                };
+                reader.readAsDataURL(imageInput.files[0]);
+            } else {
+                memories.push({
+                    id: Date.now(),
+                    title,
+                    text,
+                    image: null
+                });
+                saveAndRender();
+            }
+
+            document.getElementById('memoryTitle').value = '';
+            document.getElementById('memoryText').value = '';
+            document.getElementById('memoryImage').value = '';
+        }
+
+        function saveAndRender() {
+            localStorage.setItem('memories', JSON.stringify(memories));
+            renderGarden();
+        }
+
+        function renderGarden() {
+            const garden = document.getElementById('garden');
+            garden.innerHTML = '';
+
+            memories.forEach(memory => {
+                const container = document.createElement('div');
+                container.className = 'flower-container';
+
+                const flower = document.createElement('div');
+                flower.className = 'flower bloomed';
+                flower.id = `flower-${memory.id}`;
+
+                const colors = [
+                    '#ff6b9d',
+                    '#c44569',
+                    '#f8b195',
+                    '#f67676',
+                    '#aa96da',
+                    '#fcbad3'
+                ];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+
+                for (let i = 0; i < 6; i++) {
+                    const petal = document.createElement('div');
+                    petal.className = 'petal';
+                    petal.style.background = `radial-gradient(circle at 30% 30%, ${color}, ${shadeColor(color, -30)})`;
+                    flower.appendChild(petal);
+                }
+
+                const center = document.createElement('div');
+                center.className = 'center';
+                flower.appendChild(center);
+
+                const memoryCard = document.createElement('div');
+                memoryCard.className = 'memory-card';
+                
+                let content = '';
+                if (memory.image) {
+                    content += `<img src="${memory.image}" alt="memory">`;
+                }
+                content += `<div class="text"><strong>${memory.title}</strong><p>${memory.text}</p></div>`;
+                memoryCard.innerHTML = content;
+                
+                flower.appendChild(memoryCard);
+
+                flower.addEventListener('click', () => {
+                    flower.classList.toggle('expanded');
+                });
+
+                container.appendChild(flower);
+                garden.appendChild(container);
+            });
+        }
+
+        function shadeColor(color, percent) {
+            const num = parseInt(color.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            return '#' + (0x1000000 +
+                (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+                (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+                (B < 255 ? B < 1 ? 0 : B : 255))
+                .toString(16).slice(1);
+        }
+
+        renderGarden();
+    </script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexGen Elite Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --accent: #f43f5e;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+
+        body {
+            background: #0f172a;
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background Gradients */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 300px; height: 300px;
+            background: var(--primary);
+            filter: blur(100px);
+            border-radius: 50%;
+            top: 10%; left: 10%;
+            z-index: -1;
+            animation: float 10s infinite alternate;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 300px; height: 300px;
+            background: var(--secondary);
+            filter: blur(100px);
+            border-radius: 50%;
+            bottom: 10%; right: 10%;
+            z-index: -1;
+            animation: float 15s infinite alternate-reverse;
+        }
+
+        @keyframes float {
+            from { transform: translate(0, 0); }
+            to { transform: translate(100px, 50px); }
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-size: 2.5rem; text-align: center; margin-bottom: 30px; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .form-card {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            border-radius: 18px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+            transition: 0.3s;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus { border-color: var(--primary); background: rgba(255, 255, 255, 0.1); }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3); }
+
+        .hidden { display: none; }
+
+        .file-list { margin-top: 20px; }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 10px 0;
+            border-left: 4px solid var(--primary);
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        .download-btn {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            transition: 0.3s;
+        }
+
+        .download-btn:hover { background: #10b981; color: white; }
+
+        .logout { background: transparent; border: 1px solid var(--accent); color: var(--accent); margin-top: 20px; width: auto; padding: 8px 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="login-box">
+        <h1>Welcome Back</h1>
+        <input type="text" id="name" placeholder="Full Name">
+        <input type="email" id="email" placeholder="Gmail Address">
+        <select id="role" onchange="toggleCode()">
+            <option value="student">Student</option>
+            <option value="teacher">Teacher (Admin)</option>
+        </select>
+        <input type="password" id="t-code" class="hidden" placeholder="Teacher Secret Code">
+        <button onclick="handleLogin()">Unlock Dashboard</button>
+    </div>
+
+    <div id="dashboard" class="hidden">
+        <div style="text-align:center; margin-bottom:20px;">
+            <h2 id="greet">Hello, User</h2>
+            <p style="color: #94a3b8;">Everything is synchronized and ready.</p>
+        </div>
+
+        <div id="admin-tools" class="form-card hidden">
+            <h3 style="margin-bottom:15px; color: var(--primary);">Upload New Material</h3>
+            <input type="text" id="doc-title" placeholder="Material Topic Name">
+            <input type="file" id="doc-file" accept=".pdf">
+            <button onclick="uploadNote()">Sync to Portal</button>
+        </div>
+
+        <div class="form-card">
+            <h3>Latest Materials</h3>
+            <div id="file-container" class="file-list">
+                </div>
+        </div>
+
+        <button class="logout" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<script>
+    const TEACHER_KEY = "TEACH123";
+
+    function toggleCode() {
+        const role = document.getElementById('role').value;
+        document.getElementById('t-code').className = (role === 'teacher') ? '' : 'hidden';
+    }
+
+    function handleLogin() {
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const role = document.getElementById('role').value;
+        const code = document.getElementById('t-code').value;
+
+        if(!name || !email) return alert("Please fill your details!");
+        if(!email.endsWith("@gmail.com")) return alert("Only Gmail is allowed!");
+        if(role === 'teacher' && code !== TEACHER_KEY) return alert("Wrong Secret Code!");
+
+        localStorage.setItem('user_session', JSON.stringify({ name, role }));
+        loadPortal();
+    }
+
+    function loadPortal() {
+        const user = JSON.parse(localStorage.getItem('user_session'));
+        if(!user) return;
+
+        document.getElementById('login-box').classList.add('hidden');
+        document.getElementById('dashboard').classList.remove('hidden');
+        document.getElementById('greet').innerText = "Hello, " + user.name;
+
+        if(user.role === 'teacher') document.getElementById('admin-tools').classList.remove('hidden');
+        renderList();
+    }
+
+    function uploadNote() {
+        const title = document.getElementById('doc-title').value;
+        const fileInput = document.getElementById('doc-file');
+        
+        if(!title || !fileInput.files[0]) return alert("Fill all details!");
+        if(fileInput.files[0].size > 2 * 1024 * 1024) return alert("File size must be under 2MB!");
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            let files = JSON.parse(localStorage.getItem('saved_files')) || [];
+            files.push({ title, content: e.target.result, name: fileInput.files[0].name });
+            localStorage.setItem('saved_files', JSON.stringify(files));
+            
+            document.getElementById('doc-title').value = '';
+            fileInput.value = '';
+            renderList();
+            alert("Uploaded Successfully!");
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+    }
+
+    function renderList() {
+        const container = document.getElementById('file-container');
+        const files = JSON.parse(localStorage.getItem('saved_files')) || [];
+        
+        container.innerHTML = files.length ? '' : '<p style="color:#666; text-align:center;">No materials uploaded yet.</p>';
+        
+        files.forEach(file => {
+            container.innerHTML += `
+                <div class="file-item">
+                    <span>📄 ${file.title}</span>
+                    <a href="${file.content}" download="${file.name}" class="download-btn">Download</a>
+                </div>
+            `;
+        });
+    }
+
+    function logout() {
+        localStorage.removeItem('user_session');
+        location.reload();
+    }
+
+    if(localStorage.getItem('user_session')) loadPortal();
+</script>
+
+</body>
+</html>

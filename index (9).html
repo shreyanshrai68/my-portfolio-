@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Advanced Hacker System</title>
+
+<style>
+body {
+    margin: 0;
+    background: black;
+    color: #00ff00;
+    font-family: monospace;
+    overflow: hidden;
+}
+
+#container {
+    display: flex;
+}
+
+#terminal {
+    width: 50%;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+#radar {
+    width: 50%;
+    height: 100vh;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+}
+
+input {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: black;
+    border: none;
+    color: #00ff00;
+    font-size: 18px;
+    outline: none;
+}
+</style>
+</head>
+
+<body>
+
+<div id="container">
+    <div id="terminal"></div>
+    <div id="radar">
+        <canvas id="radarCanvas"></canvas>
+    </div>
+</div>
+
+<input type="text" id="input" placeholder="Type command...">
+
+<script>
+let terminal = document.getElementById("terminal");
+let input = document.getElementById("input");
+let canvas = document.getElementById("radarCanvas");
+let ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth / 2;
+canvas.height = window.innerHeight;
+
+let angle = 0;
+let scanning = false;
+let hackingInterval;
+let dots = [];
+
+// print
+function print(text) {
+    let p = document.createElement("div");
+    p.textContent = text;
+    terminal.appendChild(p);
+    terminal.scrollTop = terminal.scrollHeight;
+}
+
+// radar dots
+function createDots() {
+    dots = [];
+    for (let i = 0; i < 8; i++) {
+        dots.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height
+        });
+    }
+}
+
+// radar
+function drawRadar() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    let cx = canvas.width / 2;
+    let cy = canvas.height / 2;
+
+    for (let i = 50; i < 300; i += 50) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, i, 0, Math.PI * 2);
+        ctx.strokeStyle = "#003300";
+        ctx.stroke();
+    }
+
+    // dots
+    dots.forEach(d => {
+        ctx.fillStyle = "#00ff00";
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // rotating line
+    let x = cx + 300 * Math.cos(angle);
+    let y = cy + 300 * Math.sin(angle);
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = "#00ff00";
+    ctx.stroke();
+
+    angle += 0.02;
+
+    if (scanning) requestAnimationFrame(drawRadar);
+}
+
+// long scan system
+function startScan() {
+    scanning = true;
+    createDots();
+    drawRadar();
+
+    let steps = [
+        "Initializing system scan...",
+        "Collecting network data...",
+        "Scanning open ports...",
+        "Port 21: OPEN",
+        "Port 80: OPEN",
+        "Port 443: OPEN",
+        "Analyzing firewall...",
+        "Firewall bypass attempt...",
+        "Accessing router...",
+        "Tracking connected devices...",
+        "Device: Android (192.168.0.5)",
+        "Device: Laptop (192.168.0.8)",
+        "Device: Smart TV (192.168.0.12)",
+        "Monitoring packets...",
+        "Decrypting encrypted data...",
+        "Attempting password crack...",
+        "Password match found ✔",
+        "Finalizing scan...",
+        "Scan Complete ✔"
+    ];
+
+    let i = 0;
+    let interval = setInterval(() => {
+        if (i < steps.length) {
+            print(steps[i]);
+            i++;
+        } else {
+            clearInterval(interval);
+        }
+    }, 700);
+}
+
+// hack spam
+function startHack() {
+    let msgs = [
+        "Injecting script...",
+        "Bypassing firewall...",
+        "Access granted...",
+        "Downloading data...",
+        "Uploading payload..."
+    ];
+
+    hackingInterval = setInterval(() => {
+        print(msgs[Math.floor(Math.random() * msgs.length)]);
+    }, 200);
+}
+
+// input
+input.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        let cmd = input.value.toLowerCase();
+        print("> " + cmd);
+
+        if (cmd === "scan") {
+            startScan();
+        } 
+        else if (cmd === "hack") {
+            startHack();
+        } 
+        else if (cmd === "ip") {
+    getIPInfo();
+}
+else if (cmd === "track") {
+    startTracking();
+}
+        else {
+            print("Unknown command...");
+        }
+
+        input.value = "";
+    }
+});
+
+// stop
+document.addEventListener("keydown", (e) => {
+    if (e.key.toLowerCase() === "p") {
+        scanning = false;
+        clearInterval(hackingInterval);
+        clearInterval(trackingInterval);
+        print("Process Paused ❚❚");
+    }
+});
+</script>
+
+<script>
+async function getIPInfo() {
+    let res = await fetch("https://ipapi.co/json/");
+    let data = await res.json();
+
+    print("Fetching IP जानकारी...");
+    print("IP: " + data.ip);
+    print("City: " + data.city);
+    print("Country: " + data.country_name);
+    print("ISP: " + data.org);
+    print("Location scan complete ✔");
+}
+</script>
+</body>
+</html>
+<script>
+
+// create fake devices
+let trackingInterval;
+
+function startTracking() {
+    print("Initializing proximity scanner...");
+    print("Scanning 100m radius...");
+
+    trackingInterval = setInterval(() => {
+        let deviceTypes = ["Android Phone", "iPhone", "Laptop", "Smart Watch"];
+        let device = deviceTypes[Math.floor(Math.random() * deviceTypes.length)];
+
+        let distance = Math.floor(Math.random() * 100) + 1;
+
+        let signal = "";
+        if (distance < 20) signal = "█████";
+        else if (distance < 40) signal = "████";
+        else if (distance < 60) signal = "███";
+        else if (distance < 80) signal = "██";
+        else signal = "█";
+
+        print("📡 Device Detected: " + device);
+        print("📏 Distance: " + distance + "m");
+        print("📶 Signal: " + signal);
+
+        if (distance < 15) {
+            print("🎯 TARGET LOCKED");
+        }
+
+        print("----------------------");
+
+    }, 1500);
+}
+
+</script>
