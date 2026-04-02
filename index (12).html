@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheat Code Search Engine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            margin-top: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #38bdf8, #06b6d4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+            font-weight: 800;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 18px 25px;
+            font-size: 1.1rem;
+            border: 2px solid #38bdf8;
+            border-radius: 50px;
+            background: rgba(15, 23, 42, 0.8);
+            color: #e2e8f0;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+        }
+
+        .search-bar:focus {
+            box-shadow: 0 0 40px rgba(56, 189, 248, 0.6);
+            border-color: #06b6d4;
+            background: rgba(15, 23, 42, 0.95);
+        }
+
+        .search-bar::placeholder {
+            color: #64748b;
+        }
+
+        .results-container {
+            display: grid;
+            gap: 20px;
+        }
+
+        .game-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-card:hover {
+            border-color: rgba(56, 189, 248, 0.6);
+            box-shadow: 0 8px 30px rgba(56, 189, 248, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .game-title {
+            font-size: 1.5rem;
+            color: #38bdf8;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .game-platform {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cheat-codes-label {
+            color: #cbd5e1;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .cheat-codes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .cheat-tag {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(56, 189, 248, 0.2));
+            border: 1px solid rgba(56, 189, 248, 0.5);
+            color: #38bdf8;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Courier New', monospace;
+            font-weight: 500;
+        }
+
+        .cheat-tag:hover {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.4), rgba(56, 189, 248, 0.4));
+            border-color: rgba(56, 189, 248, 0.8);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+        }
+
+        .not-found {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .not-found-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .not-found h2 {
+            font-size: 1.5rem;
+            color: #cbd5e1;
+            margin-bottom: 10px;
+        }
+
+        .not-found p {
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .search-bar {
+                font-size: 1rem;
+                padding: 14px 20px;
+            }
+
+            .game-card {
+                padding: 18px;
+            }
+
+            .game-title {
+                font-size: 1.2rem;
+            }
+
+            .cheat-codes {
+                gap: 6px;
+            }
+
+            .cheat-tag {
+                font-size: 0.75rem;
+                padding: 5px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ CHEAT CODE SEARCH</h1>
+            <p>Find cheat codes for your favorite games</p>
+        </div>
+
+        <div class="search-wrapper">
+            <input 
+                type="text" 
+                id="searchBar" 
+                class="search-bar" 
+                placeholder="Search your game..."
+            >
+        </div>
+
+        <div id="resultsContainer" class="results-container"></div>
+    </div>
+
+    <script>
+        // Game Database
+        const gameDatabase = [
+            {
+                title: "GTA 5",
+                platform: "PC / Console",
+                cheatCodes: [
+                    "PAINKILLER: Invincibility (5 Min)",
+"TOOLUP: All Weapons & Ammo",
+"TURTLE: Full Health & Armor",
+"POWERUP: Recharge Special Ability",
+"CATCHME: Fast Run",
+"GOTGILLS: Fast Swim",
+"HOPTOIT: Super Jump",
+"SKYFALL: Skyfall (Fall from Sky)",
+"DEADEYE: Slow Motion Aim",
+"LAWYERUP: Lower Wanted Level",
+"FUGITIVE: Raise Wanted Level",
+"HOTHANDS: Explosive Melee",
+"HIGHEX: Explosive Ammo",
+"INCENDIARY: Flaming Bullets",
+"LIQUOR: Drunk Mode",
+"SLOWMO: Slow Motion Gameplay",
+"MAKEITRAIN: Change Weather",
+"SNOWDAY: Slippery Cars (Drift)",
+"SKYDIVE: Give Parachute",
+"BANDIT: Spawn BMX Bike",
+"BARNSTORM: Spawn Stunt Plane",
+"BUZZOFF: Spawn Buzzard Heli",
+"COMET: Spawn Comet Sports Car",
+"FLYSPRAY: Spawn Duster Plane",
+"HOLEIN1: Spawn Golf Cart",
+"OFFROAD: Spawn Sanchez Bike",
+"RAPIDGT: Spawn Rapid GT Car",
+"ROCKET: Spawn PCJ-600 Bike",
+"TRASHED: Spawn Trashmaster",
+"VINEWOOD: Spawn Stretch Limo",
+"EXTINCT: Spawn Dodo Airplane",
+"DEATHCAR: Spawn Duke O'Death",
+"BUBBLES: Spawn Kraken Sub"
+                ]
+            },
+            {
+                title: "Minecraft",
+                platform: "PC / Console / Mobile",
+                cheatCodes: [
+                   "/gamemode creative: Creative Mode",
+"/gamemode survival: Survival Mode",
+"/gamemode adventure: Adventure Mode",
+"/gamemode spectator: Spectator Mode",
+"/difficulty peaceful: No Hostile Mobs",
+"/difficulty hard: Hard Difficulty",
+"/time set day: Change to Daytime",
+"/time set night: Change to Nighttime",
+"/weather clear: Clear Weather",
+"/weather rain: Rain Weather",
+"/weather thunder: Thunderstorm",
+"/give @p diamond 64: Give 64 Diamonds",
+"/give @p iron_ingot 64: Give 64 Iron",
+"/give @p golden_apple 64: Give 64 Golden Apples",
+"/tp @p x y z: Teleport to Coordinates",
+"/kill @e: Kill All Entities",
+"/locate structure village: Find Nearest Village",
+"/locate structure stronghold: Find Stronghold",
+"/seed: Show World Seed",
+"/xp set @p 100 levels: Set XP to 100",
+"/effect give @p speed 999 5: Infinite Speed",
+"/effect give @p strength 999 5: Infinite Strength",
+"/effect give @p night_vision 999: Night Vision",
+"/setworldspawn: Set New Spawn Point",
+"/keepInventory true: Keep Items After Death"
+                ]
+            },
+            {
+                title: "GTA San Andreas",
+                platform: "PC / Console",
+                cheatCodes: [
+                   "HESOYAM: Health, Armor, $250k",
+"BAGUVIX: Infinite Health",
+"FULLCLIP: Infinite Ammo",
+"CVWKXAM: Infinite Oxygen",
+"ROCKETMAN: Spawn Jetpack",
+"PROFESSIONALKILLER: Hitman Level",
+"UZUMYMW: Weapon Set 3",
+"KJKSZPJ: Weapon Set 2",
+"LXGIWYL: Weapon Set 1",
+"AEZAKMI: Never Wanted",
+"ASNAEB: Clear Wanted Level",
+"OSRBLHH: Increase Wanted Level",
+"BRINGITON: Six Star Wanted Level",
+"BTCDBCB: Fat Body",
+"KVGYZQK: Skinny Body",
+"BUFFMEUP: Max Muscle",
+"WORSHIPME: Max Respect",
+"HELLOLADIES: Max Sex Appeal",
+"VKYPQCF: Max Stamina",
+"STICKLIKEGLUE: Perfect Handling",
+"CHITTYCHITTYBANGBANG: Flying Cars",
+"FLYINGFISH: Flying Boats",
+"JUMPJET: Spawn Hydra",
+"OHDUDE: Spawn Hunter",
+"MONSTERMASH: Spawn Monster Truck",
+"FOURWHEELFUN: Spawn Quad",
+"VROCKPOKEY: Spawn Racecar",
+"WHERESTHEFUNERAL: Spawn Romero",
+"CELEBRITYSTATUS: Spawn Stretch Limo",
+"ITSALLGULLIBLE: Spawn Stunt Plane",
+"AMOMHRER: Spawn Tanker Truck",
+"EEGCYXT: Spawn Dozer",
+"KGGGDKP: Spawn Vortex Hovercraft",
+"CPKTNWT: Blow Up All Cars",
+"ZEIIVG: All Green Lights",
+"YLTEICZ: Aggressive Drivers",
+"LLQPFBN: Pink Traffic",
+"IOWDLAC: Black Traffic",
+"AFSNMSMW: Boats Fly",
+"RIPAZHA: Cars Fly",
+"SPEEDFREAK: Nitro in All Cars",
+"BUBBLECARS: Moon Gravity",
+"GHOSTTOWN: Reduced Traffic",
+"AJLOJYQY: Peds Attack Each Other",
+"BAGOWPG: Bounty on your head",
+"FOOOXFT: Peds Have Weapons",
+"BLUESUEDESHOES: Elvis Everywhere",
+"BGLUAWML: Peds Attack with Rockets",
+"CIKGCGX: Beach Party",
+"AFPHULTL: Ninja Theme",
+"BEKKNQV: Slut Magnet",
+"IOJUFZN: Riot Mode",
+"PRIEBJ: Funhouse Theme",
+"SJMAHPE: Recruit Anyone (Pistol)",
+"ZSOXFSQ: Recruit Anyone (Rockets)",
+"XJVSNAJ: Always Midnight",
+"OFVIAC: Orange Sky",
+"ALNSFMZO: Overcast Weather",
+"AUIFRVQS: Rainy Weather",
+"CFVFGMJ: Foggy Weather",
+"MGHXYRM: Thunderstorm",
+"CWJXUOC: Sandstorm",
+"YSOHNUL: Faster Clock",
+"PPGWJHT: Faster Gameplay",
+"LIYOAAY: Slower Gameplay"
+                ]
+            },
+            {
+                title: "Red Dead Redemption 2",
+                platform: "PC / Console",
+cheatCodes: [
+    "HEALTH: Restore Health",
+    "DEADEYE: Deadeye Mode",
+    "HORSE: Summon Horse",
+    "ARMADILLO: Spawn Near Town",
+    "GREED: Heavy Weapons Set",
+"A simple life, a beautiful death: Basic Weapons Set",
+"Death is silence: Stealth Weapons Set",
+"History is written by fools: Gunslinger Weapons Set",
+"You long for sight but see nothing: Reveal Full Map",
+"Greed is God: Infinite Dead Eye",
+"You seek more than the world offers: Fortify All Bars",
+"You flourish before you die: Fill All Bars",
+"Seek all the bounty of this place: Increase Stats",
+"You revel in your disgrace, I see: Decrease Honor",
+"Virtue unearned is not virtue: Increase Honor",
+"Balance. All is balance: Reset Honor",
+"The lucky be damned: Infinite Stamina",
+"Keep your dreams simple: Spawn Wagon",
+"Keep your dreams light: Spawn Horse & Cart",
+"Would you be happier as a clown?: Spawn Circus Wagon",
+"You want more than you have: Spawn Arabian Horse",
+"You want something better: Spawn Race Horse",
+"You want punishment: Increase Wanted Level",
+"You want freedom: Decrease Wanted Level",
+"A fool on command: Instant Drunk Mode",
+"Run! Run! Run!: Spawn Race Horse (Alt)",
+"The beast is made for glory: Spawn War Horse",
+"Eat of knowledge: All Crafting Recipes",
+"Share: All Camp Upgrades",
+"My kingdom is a horse: Increase Horse Bonding"
+                ]
+            },
+            {
+                title: "Gta: Vice City",
+                platform: "PC / Console",
+                cheatCodes: [
+                    "THUGSTOOLS: Basic Weapons",
+"PROFESSIONALTOOLS: Advanced Weapons",
+"NUTTERTOOLS: Heavy Weapons",
+"ASPIRINE: Full Health",
+"PRECIOUSPROTECTION: Full Armor",
+"LEAVEMEALONE: No Wanted Level",
+"YOUWONTTAKEMEALIVE: Increase Wanted Level",
+"PANZER: Spawn Rhino Tank",
+"TRAVELINSTYLE: Spawn Bloodring Banger",
+"GETTHEREQUICKLY: Spawn Bloodring Banger (Alt)",
+"GETTHEREFAST: Spawn Sabre Turbo",
+"GETTHEREVERYFASTINDEED: Spawn Hotring Racer",
+"GETTHEREAMAZINGLYFAST: Spawn Hotring Racer (Alt)",
+"THELASTRIDE: Spawn Romero's Hearse",
+"ROCKANDROLLCAR: Spawn Love Fist Limo",
+"RUBBISHCAR: Spawn Trashmaster",
+"BETTERTHANWALKING: Spawn Caddie",
+"BIGBANG: Explode All Cars",
+"MIAMITRAFFIC: Aggressive Drivers",
+"AHAITHERE: Flying Boats",
+"COMEFLYWITHME: Flying Cars",
+"IWANTITPAINTEDBLACK: Black Traffic",
+"A BIT LIKE SKING: Pink Traffic",
+"GRIPISEVERYTHING: Perfect Handling",
+"GREENLIGHT: All Green Lights",
+"SEAWAYS: Cars Drive on Water",
+"WHEELSAREALLINEED: Wheels Only",
+"LOADSOFLITTLETHINGS: Big Wheels",
+"APLEASANTDAY: Nice Weather",
+"ALOVELYDAY: Great Weather",
+"ABITDRIEG: Cloudy Weather",
+"CATSANDDOGS: Rainy Weather",
+"CANTSEEATHING: Foggy Weather",
+"LIFEISPASSINGMEBY: Speed Up Clock",
+"BOOOOOORING: Slow Motion",
+"ONSPEED: Fast Motion",
+"FIGHTFIGHTFIGHT: Peds Riot",
+"NOBODYLIKESME: Peds Attack You",
+"OURGODGIVENRIGHTTOBEARARMS: Peds Have Weapons",
+"CHICKSWITHGUNS: Women Have Weapons",
+"FANNYMAGNET: Women Follow You",
+"CERTAINDEATH: Smoke Cigarette",
+"DEEPFRIEDMARSBARS: Fat Body",
+"PROGRAMMER: Skinny Body",
+"STILLLIKEDRESSINGUP: Change Outfit"
+                ]
+            },
+            {
+                title: "GTA 4",
+                platform: "PC / Console",
+                cheatCodes: [
+                    "482-555-0100: Full Health, Armor & Ammo",
+"362-555-0100: Raise Wanted Level",
+"267-555-0100: Clear Wanted Level",
+"359-555-0100: Spawn Annihilator (Heli)",
+"227-555-0147: Spawn Turismo (Car)",
+"227-555-0168: Spawn SuperGT (Car)",
+"227-555-0142: Spawn Comet (Car)",
+"227-555-0175: Spawn NRG-900 (Bike)",
+"625-555-0100: Spawn PCJ-600 (Bike)",
+"227-555-0100: Spawn FIB Buffalo",
+"938-555-0100: Spawn Jetmax (Boat)",
+"625-555-0150: Spawn Sanchez (Dirt Bike)",
+"826-555-0150: Spawn Trashmaster",
+"468-555-0100: Change Weather",
+"359-555-0100: Spawn Maverick (Heli)",
+"227-555-0142: Spawn Banshee (Car)",
+"227-555-0100: Spawn Cognoscenti (Car)"
+                    ]
+            },
+        ];
+
+        // DOM Elements
+        const searchBar = document.getElementById('searchBar');
+        const resultsContainer = document.getElementById('resultsContainer');
+
+        // Search Function
+        function searchGames(query) {
+            const trimmedQuery = query.trim().toLowerCase();
+
+            if (!trimmedQuery) {
+                resultsContainer.innerHTML = '';
+                return;
+            }
+
+            const filteredGames = gameDatabase.filter(game =>
+                game.title.toLowerCase().includes(trimmedQuery)
+            );
+
+            displayResults(filteredGames, trimmedQuery);
+        }
+
+        // Display Results
+        function displayResults(games, query) {
+            if (games.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="not-found">
+                        <div class="not-found-icon">🎮</div>
+                        <h2>Game Not Found</h2>
+                        <p>We couldn't find any game matching "<strong>${query}</strong>"</p>
+                        <p style="margin-top: 15px; font-size: 0.85rem;">Try searching for: GTA 5, Minecraft, GTA San Andreas, RDR2, or Vice City</p>
+                    </div>
+                `;
+                return;
+            }
+
+            resultsContainer.innerHTML = games.map(game => `
+                <div class="game-card">
+                    <div class="game-title">${game.title}</div>
+                    <div class="game-platform">📍 ${game.platform}</div>
+                    <div class="cheat-codes-label">💾 Cheat Codes</div>
+                    <div class="cheat-codes">
+                        ${game.cheatCodes.map(code => `<div class="cheat-tag">${code}</div>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Event Listener for Search
+        searchBar.addEventListener('input', (e) => {
+            searchGames(e.target.value);
+        });
+    </script>
+    <script>
+    // Copy to Clipboard Feature
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('cheat-tag')) {
+    const text = e.target.textContent;
+    navigator.clipboard.writeText(text);
+    const originalText = e.target.textContent;
+    e.target.textContent = '✓ Copied!';
+    setTimeout(() => {
+        e.target.textContent = originalText;
+    }, 1500);
+    }
+});
+
+// Filter by Platform
+function filterByPlatform(platform) {
+    const filtered = gameDatabase.filter(game => 
+    game.platform.toLowerCase().includes(platform.toLowerCase())
+    );
+    displayResults(filtered, platform);
+}
+
+// Dark/Light Mode Toggle
+function toggleTheme() {
+    document.body.style.background = document.body.style.background === 'rgb(15, 23, 42)' 
+    ? '#f0f4f8' 
+    : '#0f172a';
+    document.body.style.color = document.body.style.color === 'rgb(226, 232, 240)' 
+    ? '#1e293b' 
+    : '#e2e8f0';
+}
+
+// Search History
+const searchHistory = [];
+function addToHistory(query) {
+    if (query && !searchHistory.includes(query)) {
+    searchHistory.unshift(query);
+    if (searchHistory.length > 5) searchHistory.pop();
+    }
+}
+
+// Clear Search
+function clearSearch() {
+    searchBar.value = '';
+    resultsContainer.innerHTML = '';
+}
+
+// Sort Results Alphabetically
+function sortResults() {
+    const sorted = [...gameDatabase].sort((a, b) => a.title.localeCompare(b.title));
+    displayResults(sorted, 'All Games');
+}
+
+// Count Total Cheats
+function getTotalCheats() {
+    return gameDatabase.reduce((sum, game) => sum + game.cheatCodes.length, 0);
+}
+
+// Random Cheat Suggestion
+function getRandomCheat() {
+    const randomGame = gameDatabase[Math.floor(Math.random() * gameDatabase.length)];
+    const randomCheat = randomGame.cheatCodes[Math.floor(Math.random() * randomGame.cheatCodes.length)];
+    return { game: randomGame.title, cheat: randomCheat };
+}
+
+// Update search history on input
+searchBar.addEventListener('input', (e) => {
+    addToHistory(e.target.value);
+    searchGames(e.target.value);
+});
+
+// Keyboard Shortcut (Ctrl+K to focus search)
+document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    searchBar.focus();
+    }
+});
+</script>
+</body>
+</html>
+<!-- Additional Features Section -->
+<script>
+    // 1. FAVORITES FEATURE - Save favorite cheats
+    const favorites = JSON.parse(localStorage.getItem('favoriteCheats')) || [];
+    
+    function toggleFavorite(cheatText) {
+        const index = favorites.indexOf(cheatText);
+        if (index > -1) {
+            favorites.splice(index, 1);
+        } else {
+            favorites.push(cheatText);
+        }
+        localStorage.setItem('favoriteCheats', JSON.stringify(favorites));
+    }
+
+    // 2. STATISTICS - Show game stats
+    function showStatistics() {
+        const totalGames = gameDatabase.length;
+        const totalCheats = gameDatabase.reduce((sum, game) => sum + game.cheatCodes.length, 0);
+        alert(`📊 Statistics:\n\nTotal Games: ${totalGames}\nTotal Cheats: ${totalCheats}\nFavorites: ${favorites.length}`);
+    }
+
+    // 3. EXPORT CHEATS - Download as text file
+    function exportCheats() {
+        let content = 'CHEAT CODE DATABASE\n\n';
+        gameDatabase.forEach(game => {
+            content += `${game.title} (${game.platform})\n`;
+            content += '─'.repeat(40) + '\n';
+            game.cheatCodes.forEach(code => content += `• ${code}\n`);
+            content += '\n';
+        });
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'cheats_database.txt';
+        a.click();
+    }
+
+    // 4. RECENT SEARCHES - Track and display recent searches
+    const recentSearches = JSON.parse(localStorage.getItem('recentSearches')) || [];
+    
+    function addRecentSearch(query) {
+        if (query.trim()) {
+            recentSearches.unshift(query);
+            recentSearches.splice(5);
+            localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
+        }
+    }
+
+    // 5. ADVANCED FILTER - Filter by cheat type
+    function filterByCheats(keyword) {
+        const filtered = gameDatabase.map(game => ({
+            ...game,
+            cheatCodes: game.cheatCodes.filter(code => code.toLowerCase().includes(keyword.toLowerCase()))
+        })).filter(game => game.cheatCodes.length > 0);
+        
+        displayResults(filtered, `Cheats containing: ${keyword}`);
+    }
+
+    // 6. COMPARE GAMES - Compare cheat counts
+    function compareGames(game1Title, game2Title) {
+        const g1 = gameDatabase.find(g => g.title.toLowerCase() === game1Title.toLowerCase());
+        const g2 = gameDatabase.find(g => g.title.toLowerCase() === game2Title.toLowerCase());
+        
+        if (g1 && g2) {
+            const result = `${g1.title}: ${g1.cheatCodes.length} cheats\n${g2.title}: ${g2.cheatCodes.length} cheats`;
+            alert('📈 Game Comparison:\n\n' + result);
+        }
+    }
+
+    // 7. CASE SENSITIVITY TOGGLE
+    let caseSensitive = false;
+    function toggleCaseSensitivity() {
+        caseSensitive = !caseSensitive;
+        alert(`Case Sensitivity: ${caseSensitive ? 'ON' : 'OFF'}`);
+    }
+
+    // 8. SEARCH SUGGESTIONS - Auto-suggest games
+    function getSuggestions(query) {
+        return gameDatabase
+            .filter(g => g.title.toLowerCase().startsWith(query.toLowerCase()))
+            .map(g => g.title);
+    }
+
+    // 9. SHARE CHEAT - Generate shareable link
+    function shareCheat(cheatText) {
+        const url = `${window.location.href}?cheat=${encodeURIComponent(cheatText)}`;
+        navigator.clipboard.writeText(url);
+        alert('✓ Shareable link copied!');
+    }
+
+    // 10. PRINT CHEATS - Print game cheats
+    function printCheats(gameTitle) {
+        const game = gameDatabase.find(g => g.title === gameTitle);
+        if (game) {
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write(`<h2>${game.title}</h2><p>${game.platform}</p>`);
+            game.cheatCodes.forEach(code => printWindow.document.write(`<p>• ${code}</p>`));
+            printWindow.print();
+        }
+    }
+
+    // 11. SEARCH HISTORY DROPDOWN - Show previous searches
+    function displaySearchHistory() {
+        if (recentSearches.length === 0) {
+            alert('No recent searches');
+            return;
+        }
+        alert('Recent Searches:\n\n' + recentSearches.join('\n'));
+    }
+
+    // 12. RESET ALL DATA - Clear storage
+    function resetAllData() {
+        if (confirm('Are you sure? This will clear favorites and search history.')) {
+            localStorage.clear();
+            favorites.length = 0;
+            recentSearches.length = 0;
+            clearSearch();
+            alert('✓ All data cleared!');
+        }
+    }
+
+    // Update searchBar event to track recent searches
+    searchBar.addEventListener('input', (e) => {
+        addRecentSearch(e.target.value);
+        searchGames(e.target.value);
+    });
+
+    // Enhanced copy with favorites tracking
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('cheat-tag')) {
+            const text = e.target.textContent;
+            navigator.clipboard.writeText(text);
+            const originalText = e.target.textContent;
+            e.target.textContent = '✓ Copied!';
+            setTimeout(() => {
+                e.target.textContent = originalText;
+            }, 1500);
+            toggleFavorite(text);
+        }
+    });
+</script>
