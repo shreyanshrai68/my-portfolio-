@@ -495,43 +495,40 @@ backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 's
  <button onclick="startAI()" class="ai-btn">🤖 Activate AI</button>
 </section>
 <script>
-let hasSpoken = false;
-
-function speakIntro() {
-
-if(hasSpoken) return;
+function startAI(){
 
 const text = "Hello, I am Shreyansh. A passionate developer who creates futuristic digital experiences. I don't just build websites, I build ideas into reality. Welcome to my world.";
 
 const speech = new SpeechSynthesisUtterance(text);
 
-speech.rate = 0.9;
-speech.pitch = 1;
-speech.volume = 1;
+// Wait for voices to load properly
+let voices = speechSynthesis.getVoices();
 
-// Voice selection (Jarvis style)
-const voices = speechSynthesis.getVoices();
-const jarvisVoice = voices.find(v => 
-    v.name.toLowerCase().includes("google") ||
-    v.name.toLowerCase().includes("david") ||
-    v.name.toLowerCase().includes("english")
-);
-
-if(jarvisVoice){
-    speech.voice = jarvisVoice;
+if(voices.length === 0){
+    speechSynthesis.onvoiceschanged = () => {
+        voices = speechSynthesis.getVoices();
+        speakNow(voices);
+    };
+}else{
+    speakNow(voices);
 }
 
-speechSynthesis.speak(speech);
-hasSpoken = true;
-}
+function speakNow(voices){
+    const voice = voices.find(v => 
+        v.name.toLowerCase().includes("google") ||
+        v.name.toLowerCase().includes("english")
+    );
 
-// Trigger when About section visible
-const aboutSection = document.querySelector('.about');
-
-window.addEventListener('scroll', () => {
-    const pos = aboutSection.getBoundingClientRect().top;
-    if(pos < window.innerHeight - 100){
-        speakIntro();
+    if(voice){
+        speech.voice = voice;
     }
-});
+
+    speech.rate = 0.9;
+    speech.pitch = 1;
+    speech.volume = 1;
+
+    speechSynthesis.speak(speech);
+}
+
+}
 </script>
