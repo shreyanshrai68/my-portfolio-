@@ -172,6 +172,22 @@ footer{text-align:center;padding:40px;color:#6e7681;}
 .about-img:hover img {
     transform: scale(1.08) rotate(1deg);
 }
+  .ai-btn {
+    margin-top: 20px;
+    padding: 10px 18px;
+    background: transparent;
+    border: 1px solid #00e0ff;
+    color: #00e0ff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.ai-btn:hover {
+    background: #00e0ff;
+    color: #070b14;
+    box-shadow: 0 0 20px #00e0ff;
+}
 </style>
 </head>
 
@@ -268,6 +284,18 @@ footer{text-align:center;padding:40px;color:#6e7681;}
 <img src="https://picsum.photos/400?10">
 <h3>Project 10</h3>
 <a href="index (11).html"><span class="project-btn">Open</span></a>
+</div>
+
+  <div class="card">
+<img src="https://picsum.photos/400?11">
+<h3>Project 11</h3>
+<a href="index (12).html"><span class="project-btn">Open</span></a>
+</div>
+
+<div class="card">
+<img src="https://picsum.photos/400?12">
+<h3>Project 12</h3>
+<a href="index (13).html"><span class="project-btn">Open</span></a>
 </div>
   
 </div>
@@ -464,4 +492,46 @@ backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 's
     <div class="energy-line delay"></div>
     <div class="energy-line delay2"></div>
 </div>
+  <button onclick="speakIntro()" class="ai-btn">intro</button>
 </section>
+<script>
+let hasSpoken = false;
+
+function speakIntro() {
+
+if(hasSpoken) return;
+
+const text = "Hello, I am Shreyansh. A passionate developer who creates futuristic digital experiences. I don't just build websites, I build ideas into reality. Welcome to my world.";
+
+const speech = new SpeechSynthesisUtterance(text);
+
+speech.rate = 0.9;
+speech.pitch = 1;
+speech.volume = 1;
+
+// Voice selection (Jarvis style)
+const voices = speechSynthesis.getVoices();
+const jarvisVoice = voices.find(v => 
+    v.name.toLowerCase().includes("google") ||
+    v.name.toLowerCase().includes("david") ||
+    v.name.toLowerCase().includes("english")
+);
+
+if(jarvisVoice){
+    speech.voice = jarvisVoice;
+}
+
+speechSynthesis.speak(speech);
+hasSpoken = true;
+}
+
+// Trigger when About section visible
+const aboutSection = document.querySelector('.about');
+
+window.addEventListener('scroll', () => {
+    const pos = aboutSection.getBoundingClientRect().top;
+    if(pos < window.innerHeight - 100){
+        speakIntro();
+    }
+});
+</script>
