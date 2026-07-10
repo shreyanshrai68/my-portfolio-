@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Pro Keyboard Studio 🎹🎸</title>
+    <title>Ultimate Pro Keyboard Studio with Song Guide 🎹🎧</title>
     <style>
         * {
             box-sizing: border-box;
@@ -12,73 +12,135 @@
             background: #121214;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: white;
-            overflow: hidden;
+            overflow-y: auto;
         }
         .header {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         h1 {
             margin: 0;
             letter-spacing: 4px;
             color: #00ffcc;
             text-shadow: 0 0 15px rgba(0, 255, 204, 0.6);
-            font-size: 2rem;
+            font-size: 1.8rem;
         }
-        /* Tone Display Panel */
         .display-panel {
             background: #000;
             border: 2px solid #333;
-            padding: 8px 20px;
+            padding: 6px 15px;
             border-radius: 6px;
-            margin-top: 8px;
+            margin-top: 5px;
             display: inline-block;
-            box-shadow: inset 0 0 10px rgba(0,255,204,0.2);
         }
         .display-panel span {
             font-family: 'Courier New', Courier, monospace;
             color: #00ffcc;
             font-weight: bold;
-            font-size: 1.1rem;
         }
+
+        /* Song Selector Styles */
+        .song-selector-panel {
+            background: #1a1a24;
+            border: 2px solid #00ffcc;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            width: 850px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0,255,204,0.1);
+        }
+        .song-btn-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .song-btn {
+            background: #2a2a35;
+            color: white;
+            border: 1px solid #444;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .song-btn:hover, .song-btn.active {
+            background: #00ffcc;
+            color: black;
+            border-color: #00ffcc;
+            box-shadow: 0 0 10px rgba(0,255,204,0.3);
+        }
+        .lyrics-guide {
+            margin-top: 10px;
+            background: #0a0a0f;
+            padding: 12px;
+            border-radius: 6px;
+            min-height: 85px;
+            font-size: 0.95rem;
+            color: #ddd;
+            border-left: 4px solid #00ffcc;
+            text-align: left;
+        }
+        .recommended-tone {
+            color: #ff0055;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        .cheat-notes {
+            color: #00ffcc;
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+            letter-spacing: 2px;
+            font-size: 1.1rem;
+            margin-top: 6px;
+            background: rgba(0, 255, 204, 0.05);
+            padding: 5px;
+            border-radius: 4px;
+        }
+
         /* Tone Quick Guide */
         .tone-guide {
             display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
+            gap: 6px;
+            margin-bottom: 15px;
             background: #1a1a1e;
-            padding: 8px;
+            padding: 6px;
             border-radius: 8px;
-            border: 1px solid #2a2a30;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         .tone-badge {
-            font-size: 11px;
-            padding: 4px 8px;
+            font-size: 10px;
+            padding: 4px 6px;
             background: #2a2a32;
             border-radius: 4px;
             color: #bbb;
-            border: 1px solid #3a3a45;
         }
         .tone-badge.active {
-            background: #00ffcc;
-            color: #000;
+            background: #ff0055;
+            color: white;
             font-weight: bold;
-            box-shadow: 0 0 8px rgba(0,255,204,0.4);
-            border-color: #00ffcc;
+            box-shadow: 0 0 8px rgba(255,0,85,0.4);
         }
 
-        /* Piano Outer Chassis */
+        /* Piano Interface */
         .piano-wrapper {
             background: #1e1e24;
-            padding: 30px 20px;
+            padding: 25px 15px;
             border-radius: 16px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9), inset 0 2px 3px rgba(255,255,255,0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9);
             border: 5px solid #2d2d35;
         }
         .piano {
@@ -88,7 +150,7 @@
         /* White Keys */
         .key {
             width: 46px;
-            height: 220px;
+            height: 210px;
             background: linear-gradient(to bottom, #ffffff 0%, #f2f2f2 100%);
             border: 1px solid #b5b5b5;
             border-radius: 0 0 5px 5px;
@@ -100,21 +162,20 @@
             padding-bottom: 12px;
             color: #111;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 11px;
             transition: all 0.05s ease;
             user-select: none;
-            box-shadow: 0 4px 4px rgba(0,0,0,0.2);
         }
         .key.active, .key:active {
             background: linear-gradient(to bottom, #e5e5e5 0%, #cccccc 100%);
-            height: 218px;
+            height: 208px;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
             transform: translateY(2px);
         }
         /* Black Keys */
         .key.black {
             width: 28px;
-            height: 135px;
+            height: 125px;
             background: linear-gradient(to bottom, #3a3a3a 0%, #0a0a0a 100%);
             border: 1px solid #000;
             color: #fff;
@@ -122,14 +183,11 @@
             z-index: 2;
             margin-left: -14px; 
             border-radius: 0 0 3px 3px;
-            box-shadow: 0 4px 5px rgba(0,0,0,0.4);
         }
         .key.black.active, .key.black:active {
-            background: linear-gradient(to bottom, #222 0%, #000 100%);
-            height: 133px;
-            box-shadow: inset 0 0 6px rgba(0,0,0,0.8);
+            background: linear-gradient(to bottom, #ff0055 0%, #990033 100%);
+            height: 123px;
         }
-        /* Hints Label */
         .hint {
             display: block;
             font-size: 10px;
@@ -148,9 +206,18 @@
 <body>
 
     <div class="header">
-        <h1>PRO SYNTHESIZER STUDIO</h1>
+        <h1>PRO SYNTHESIZER & CHEAT STUDIO</h1>
         <div class="display-panel">
-            Current Tone: <span id="currentToneDisplay">Acoustic Piano (F1)</span>
+            Instrument Tone: <span id="currentToneDisplay">Acoustic Piano (F1)</span>
+        </div>
+    </div>
+
+    <div class="song-selector-panel">
+        <div class="song-btn-wrapper" id="songButtonsContainer"></div>
+        <div class="lyrics-guide">
+            <div id="toneRecommendation" class="recommended-tone"></div>
+            <div id="lyricsText">Select a song to practice!</div>
+            <div id="cheatNotes" class="cheat-notes"></div>
         </div>
     </div>
 
@@ -216,7 +283,6 @@
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioCtx = new AudioContext();
 
-        // 24 Full Precision Frequencies (Hz)
         const noteFrequencies = {
             "C4": 261.63, "Db4": 277.18, "D4": 293.66, "Eb4": 311.13, "E4": 329.63,
             "F4": 349.23, "Gb4": 369.99, "G4": 392.00, "Ab4": 415.30, "A4": 440.00, "Bb4": 466.16, "B4": 493.88,
@@ -225,7 +291,82 @@
             "C6": 1046.50, "Db6": 1108.73, "D6": 1174.66
         };
 
-        // 10 Instruments Configuration (Sound Engine Design)
+        // 12 Ultimate Song Database with Precise Key Mappings and F-Key Recommendations
+        const songDatabase = {
+            birthday: {
+                title: "🎂 Happy Birthday",
+                fkey: "F1 (Piano) or F2 (E-Piano)",
+                lyrics: "Happy Birthday to You... Happy Birthday to You...",
+                cheat: "Q Q W Q R E -- Q Q W Q T R -- Q Q I U R E W -- 7 7 U R T R"
+            },
+            tauba: {
+                title: "🔥 Tauba Tera Nakhra",
+                fkey: "F3 (Nylon Guitar) or F4 (Clean Electric)",
+                lyrics: "O soneya yu tera shrmana, meri jann na lele... kaan ke picche julf chupana, meri jaan kya kehne! Jalma tauba tera nakhra...",
+                cheat: "Q W E E... E R T T R E W... W E R R... R T Y Y T R E... E R T T T Y I U T R E"
+            },
+            kalhoNaHo: {
+                title: "❤️ Kal Ho Naa Ho",
+                fkey: "F1 (Piano) or F9 (Flute)",
+                lyrics: "Har ghadi badal rahi hai roop zindagi... Chaav hai kabhi, kabhi hai dhoop zindagi...",
+                cheat: "Q W E -- W E R T -- R T Y U T R E -- Q W E -- W E R T -- R T Y U T R E"
+            },
+            tumHiHo: {
+                title: "😭 Tum Hi Ho",
+                fkey: "F1 (Piano) or F7 (Cyber Lead)",
+                lyrics: "Hum tere bin ab reh nahi sakte... Tere bina kya wajood mera...",
+                cheat: "Y U I U Y I U Y T R -- R T Y T R Y T R E W -- Q W E E R E W E Q"
+            },
+            kesariya: {
+                title: "🍁 Kesariya",
+                fkey: "F3 (Nylon Guitar)",
+                lyrics: "Kesariya tera ishq hai piya... Rang jaau jo main haath lagaau...",
+                cheat: "Q W E R T -- T Y T R -- R T R E -- E R E W -- Q W E R T -- T Y T R -- R T R I"
+            },
+            dilDiyanGallan: {
+                title: "✨ Dil Diyan Gallan",
+                fkey: "F2 (Electric Piano)",
+                lyrics: "Dil diyan gallan karange naal naal beh ke... Akh naale akh nu mila ke...",
+                cheat: "Q E T Y T -- Y T R E W Q -- Q E T Y T -- Y T R E R T E"
+            },
+            heeriye: {
+                title: "🌸 Heeriye",
+                fkey: "F4 (Electric Clean)",
+                lyrics: "Heeriye sehra baandh ke main toh... Yaara tujhe le jaaunga...",
+                cheat: "E R T Y U -- U I U Y T -- T Y U I P -- P A P O I U"
+            },
+            chaleya: {
+                title: "🕺 Chaleya",
+                fkey: "F6 (Synth Brass) or F8 (Retro 8-Bit)",
+                lyrics: "Teri saanson mein gumnaam main... Teri nazron mein roshan main...",
+                cheat: "Q W E R T Y T -- T Y T R E W -- Q W E R T Y T -- Y T R E R T"
+            },
+            raatanLambiyan: {
+                title: "🌌 Raatan Lambiyan",
+                fkey: "F9 (Sine Flute)",
+                lyrics: "Kaatun kaise raataan o saawre... Jiya nahi jaata sun baawre...",
+                cheat: "I U Y T R R -- R T Y U Y T R -- I U Y T R R -- R T Y U Y T R"
+            },
+            narutoSad: {
+                title: "🥷 Naruto Sad Theme",
+                fkey: "F3 (Nylon Guitar 🎻)",
+                lyrics: "Sadness and Sorrow (Naruto OST) - Sounds beautiful on Guitar mode.",
+                cheat: "Q E R T -- T R E Q -- Q E R T I -- U T U I -- P I T Q"
+            },
+            gtaSan: {
+                title: "🎮 GTA San Andreas",
+                fkey: "F10 (Deep Bass)",
+                lyrics: "GTA San Andreas Theme Song Intro Theme Line.",
+                cheat: "A D F -- G F D A -- S D F -- G F D S -- Q W E R -- T R E Q"
+            },
+            duskTillDawn: {
+                title: "🎵 Dusk Till Dawn",
+                fkey: "F7 (Cyber Lead)",
+                lyrics: "Baby, I'm right here... I'll hold you when things go wrong...",
+                cheat: "Q W E R T Y -- Y Y Y U Y T R E -- Q W E R T Y -- Y Y T R E W Q"
+            }
+        };
+
         let currentTone = 'piano';
         const toneNames = {
             'F1': { id: 'piano', label: 'Acoustic Piano' },
@@ -240,19 +381,18 @@
             'F10': { id: 'bass', label: 'Deep Bass' }
         };
 
-        // Advanced Waveform Synthesizer Control Engine
+        // FIXED Audio Engine: Frequency bug completely resolved here
         function playTone(frequency) {
             if (!frequency) return;
 
             const osc = audioCtx.createOscillator();
-            const osc2 = audioCtx.createOscillator(); // Sub-harmonics for depth
+            const osc2 = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
-
+            
+            osc.frequency.setValueAtTime(frequency, audioCtx.currentTime); // Dynamic baseline mapping fixed
             gainNode.connect(audioCtx.destination);
-
             let duration = 1.5;
 
-            // Custom sound synthesis algorithms matching the 10 custom instrument configurations
             switch(currentTone) {
                 case 'piano':
                     osc.type = 'triangle';
@@ -260,57 +400,45 @@
                     gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.4);
                     break;
                 case 'epiano':
-                    osc.type = 'sine';
-                    osc2.type = 'triangle';
-                    osc2.frequency.value = frequency * 2; // Overtones
-                    osc2.connect(gainNode);
-                    osc2.start();
-                    osc2.stop(audioCtx.currentTime + 1.0);
+                    osc.type = 'sine'; 
+                    osc2.type = 'triangle'; 
+                    osc2.frequency.setValueAtTime(frequency * 2, audioCtx.currentTime);
+                    osc2.connect(gainNode); osc2.start(); osc2.stop(audioCtx.currentTime + 1.0);
                     gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
                     gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.0);
                     break;
-                case 'guitar': // Nylon Acoustic Strings Simulation
+                case 'guitar':
                     osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
-                    // Sudden pluck tension decay
                     gainNode.gain.setValueAtTime(0.7, audioCtx.currentTime);
                     gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.1);
                     gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2);
                     break;
-                case 'cleanGt': // Bright metallic electric pluck
+                case 'cleanGt':
                     osc.type = 'sawtooth';
-                    osc.frequency.value = frequency;
                     gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
                     gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
                     break;
-                case 'organ': // Rich multi-layered pipeline organ
-                    osc.type = 'sawtooth';
-                    osc2.type = 'sine';
-                    osc2.frequency.value = frequency * 0.5; // Deep sub base
-                    osc2.connect(gainNode);
-                    osc2.start();
-                    osc2.stop(audioCtx.currentTime + 2.0);
+                case 'organ':
+                    osc.type = 'sawtooth'; 
+                    osc2.type = 'sine'; 
+                    osc2.frequency.setValueAtTime(frequency * 0.5, audioCtx.currentTime);
+                    osc2.connect(gainNode); osc2.start(); osc2.stop(audioCtx.currentTime + 2.0);
                     duration = 2.0;
                     gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                    gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 1.5);
                     gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 2.0);
                     break;
                 case 'brass':
                     osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
-                    // Filter sweep simulation via gain velocity
                     gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
                     gainNode.gain.linearRampToValueAtTime(0.4, audioCtx.currentTime + 0.15);
                     gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5);
                     break;
                 case 'lead':
                     osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
                     gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                    gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.5);
                     gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.6);
                     break;
-                case 'retro': // Classic Arcade Square Wave
+                case 'retro':
                     osc.type = 'square';
                     gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
                     gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.7);
@@ -318,24 +446,51 @@
                 case 'flute':
                     osc.type = 'sine';
                     gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-                    gainNode.gain.linearRampToValueAtTime(0.4, audioCtx.currentTime + 0.2);
                     gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.3);
                     break;
-                case 'bass': // Deep sub-harmonic punchy waves
-                    osc.type = 'triangle';
-                    osc.frequency.value = frequency * 0.5; // Dropped one full octave down
+                case 'bass':
+                    osc.type = 'triangle'; 
+                    osc.frequency.setValueAtTime(frequency * 0.5, audioCtx.currentTime);
                     gainNode.gain.setValueAtTime(0.8, audioCtx.currentTime);
                     gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.0);
                     break;
             }
 
-            osc.frequency.value = osc.frequency.value || frequency;
             osc.connect(gainNode);
             osc.start();
             osc.stop(audioCtx.currentTime + duration);
         }
 
-        // Mouse click handler
+        // Render UI song selection buttons programmatically
+        function renderSongInterface() {
+            const container = document.getElementById('songButtonsContainer');
+            container.innerHTML = '';
+
+            Object.keys(songDatabase).forEach((key, index) => {
+                const btn = document.createElement('button');
+                btn.className = index === 0 ? 'song-btn active' : 'song-btn';
+                btn.innerText = songDatabase[key].title;
+                
+                btn.onclick = () => {
+                    document.querySelectorAll('.song-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    displaySongDetails(key);
+                };
+                container.appendChild(btn);
+            });
+
+            // Initialize default text configuration on initial screen layout rendering
+            displaySongDetails('birthday');
+        }
+
+        function displaySongDetails(songKey) {
+            const data = songDatabase[songKey];
+            document.getElementById('toneRecommendation').innerText = `RECOMMENDED TONE KEY: Press ${data.fkey}`;
+            document.getElementById('lyricsText').innerText = data.lyrics;
+            document.getElementById('cheatNotes').innerText = `KEYS TO PRESS: ${data.cheat}`;
+        }
+
+        // Mouse click handlers
         const keys = document.querySelectorAll('.key');
         keys.forEach(key => {
             key.addEventListener('mousedown', () => {
@@ -345,27 +500,21 @@
             });
         });
 
-        // Key listeners for Piano and Tone Selection Controls
+        // Key down interception event loop
         window.addEventListener('keydown', (e) => {
             if (audioCtx.state === 'suspended') audioCtx.resume();
-            
             const pressedKey = e.key.toUpperCase();
             
-            // Check Function Key interception (F1 to F10)
             if (toneNames[pressedKey]) {
-                e.preventDefault(); // Stop default browser behaviors safely
+                e.preventDefault();
                 currentTone = toneNames[pressedKey].id;
-                
-                // Update Layout View Display text and badge highlights
                 document.getElementById('currentToneDisplay').innerText = `${toneNames[pressedKey].label} (${pressedKey})`;
                 document.querySelectorAll('.tone-badge').forEach(b => b.classList.remove('active'));
-                
                 const currentBadgeIndex = Object.keys(toneNames).indexOf(pressedKey) + 1;
                 document.getElementById(`t${currentBadgeIndex}`).classList.add('active');
                 return;
             }
 
-            // Keyboard keys player detection
             const keyElement = document.querySelector(`.key[data-key="${pressedKey}"]`);
             if (keyElement) {
                 if (e.repeat) return;
@@ -382,6 +531,8 @@
                 keyElement.classList.remove('active');
             }
         });
+
+        document.addEventListener('DOMContentLoaded', renderSongInterface);
     </script>
 </body>
 </html>
