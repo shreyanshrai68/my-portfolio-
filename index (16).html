@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Zero-Knowledge Secure Vault</title>
+    <style>
+        :root {
+            --bg-dark: #0a0b10;
+            --panel-bg: #11131c;
+            --accent-green: #00ff88;
+            --accent-blue: #00bfff;
+            --accent-purple: #bf66ff;
+            --accent-warning: #ff5f7a;
+            --text-main: #e2e8f0;
+            --border-color: #222636;
+        }
+
+        body {
+            margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-dark); color: var(--text-main);
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+        }
+
+        .container {
+            width: 100%; max-width: 650px; background: var(--panel-bg);
+            border: 1px solid var(--border-color); padding: 30px;
+            border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            margin-top: 0; font-weight: 600; letter-spacing: 1px;
+            background: linear-gradient(45deg, var(--accent-green), var(--accent-blue));
+            background-clip: text;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .input-group {
+            margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px;
+        }
+
+        label { font-size: 12px; color: #8a99ad; text-transform: uppercase; letter-spacing: 1px; }
+
+        input, textarea {
+            background: #181a26; border: 1px solid var(--border-color);
+            color: white; padding: 12px; border-radius: 10px; font-size: 14px;
+            outline: none; transition: border 0.3s;
+        }
+
+        input:focus, textarea:focus { border-color: var(--accent-blue); }
+        textarea { resize: vertical; min-height: 120px; font-family: inherit; }
+
+        .btn-row { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 10px; }
+
+        button {
+            flex: 1; min-width: 135px; padding: 14px; border: none; border-radius: 10px;
+            font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+
+        .btn-encrypt { background: var(--accent-green); color: #000; }
+        .btn-encrypt:hover { box-shadow: 0 0 15px rgba(0, 255, 136, 0.4); transform: translateY(-1px); }
+
+        .btn-decrypt { background: var(--accent-blue); color: #000; }
+        .btn-decrypt:hover { box-shadow: 0 0 15px rgba(0, 191, 255, 0.4); transform: translateY(-1px); }
+
+        .btn-copy { background: var(--accent-purple); color: #000; }
+        .btn-copy:hover { box-shadow: 0 0 15px rgba(191, 102, 255, 0.35); transform: translateY(-1px); }
+
+        .btn-clear { background: var(--accent-warning); color: #000; }
+        .btn-clear:hover { box-shadow: 0 0 15px rgba(255, 95, 122, 0.35); transform: translateY(-1px); }
+
+        .status-box {
+            margin-top: 20px; padding: 12px; border-radius: 8px;
+            font-size: 13px; text-align: center; display: none;
+        }
+        .status-success { background: rgba(0, 255, 136, 0.1); color: var(--accent-green); border: 1px solid rgba(0, 255, 136, 0.2); }
+        .status-error { background: rgba(255, 0, 85, 0.1); color: #ff0055; border: 1px solid rgba(255, 0, 85, 0.2); }
+
+        .info-tag { font-size: 11px; color: #5a6578; text-align: center; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🔒 Crypto Vault System</h2>
+        <p style="color: #8a99ad; font-size: 14px; margin-bottom: 25px;">आपका डेटा पूरी तरह से आपके ब्राउज़र में एनक्रिप्ट होकर स्टोर होता है। कोई सर्वर नहीं, कोई लीक नहीं।</p>
+
+        <div class="input-group">
+            <label for="master-password">Master Security Key (Password)</label>
+            <input type="password" id="master-password" placeholder="अपना गुप्त पासवर्ड डालें...">
+        </div>
+
+        <div class="input-group">
+            <label for="secret-note">Secret Note / Raw Data</label>
+            <textarea id="secret-note" placeholder="यहाँ अपना सीक्रेट नोट लिखें या एनक्रिप्टेड डेटा को डिक्रिप्ट करने के लिए छोड़ दें..."></textarea>
+        </div>
+
+        <div class="btn-row">
+            <button class="btn-encrypt" onclick="handleEncrypt()">🔐 Encrypt & Save Locally</button>
+            <button class="btn-decrypt" onclick="handleDecrypt()">🔓 Load & Decrypt</button>
+            <button class="btn-copy" onclick="handleCopyVault()">📋 Copy Vault Data</button>
+            <button class="btn-clear" onclick="handleClearVault()">🗑️ Clear Vault</button>
+        </div>
+
+        <div id="status" class="status-box"></div>
+
+        <div class="info-tag">Powered by Web Crypto API ($AES-GCM$ 256-bit)</div>
+    </div>
+
+    <script>
+        // स्टेटस दिखाने का फ़ंक्शन
+        function showStatus(text, type) {
+            const statusEl = document.getElementById('status');
+            statusEl.innerText = text;
+            statusEl.className = `status-box status-${type}`;
+            statusEl.style.display = 'block';
+        }
+
+        // पासवर्ड से सुरक्षित की (Key) बनाने का फ़ंक्शन
+        async function deriveKey(password, salt) {
+            const encoder = new TextEncoder();
+            const baseKey = await crypto.subtle.importKey(
+                "raw", 
+                encoder.encode(password), 
+                { name: "PBKDF2" }, 
+                false, 
+                ["deriveKey"]
+            );
+            return crypto.subtle.deriveKey(
+                {
+                    name: "PBKDF2",
+                    salt: salt,
+                    iterations: 100000,
+                    hash: "SHA-256"
+                },
+                baseKey,
+                { name: "AES-GCM", length: 256 },
+                false,
+                ["encrypt", ["decrypt"]]
+            );
+        }
+
+        // 🔐 एनक्रिप्शन लॉजिक
+        async function handleEncrypt() {
+            const password = document.getElementById('master-password').value;
+            const noteText = document.getElementById('secret-note').value;
+
+            if (!password || !noteText) {
+                showStatus("कृपया पासवर्ड और नोट दोनों भरें!", "error");
+                return;
+            }
+
+            try {
+                const encoder = new TextEncoder();
+                // साल्ट और इनिशियलाइज़ेशन वेक्टर (IV) रैंडम जनरेट करना सुरक्षा के लिए जरूरी है
+                const salt = crypto.getRandomValues(new Uint8Array(16));
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+
+                const key = await deriveKey(password, salt);
+
+                const encrypted = await crypto.subtle.encrypt(
+                    { name: "AES-GCM", iv: iv },
+                    key,
+                    encoder.encode(noteText)
+                );
+
+                // बफ़र्स को हेक्स स्ट्रिंग में बदलना ताकि आसानी से टेक्स्ट फॉर्म में स्टोर हो सके
+                const encryptedArray = new Uint8Array(encrypted);
+                const hexEncrypted = Array.from(encryptedArray).map(b => b.toString(16).padStart(2, '0')).join('');
+                const hexSalt = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
+                const hexIv = Array.from(iv).map(b => b.toString(16).padStart(2, '0')).join('');
+
+                // एक पूरा पैकेज बनाकर लोकल स्टोरेज में डालना
+                const vaultPackage = {
+                    ciphertext: hexEncrypted,
+                    salt: hexSalt,
+                    iv: hexIv
+                };
+
+                localStorage.setItem('crypto_vault_data', JSON.stringify(vaultPackage));
+                document.getElementById('secret-note').value = ""; // सुरक्षा के लिए स्क्रीन साफ़
+                showStatus("डेटा सफलतापूर्वक एनक्रिप्ट हुआ और लोकल स्टोरेज में लॉक कर दिया गया!", "success");
+
+            } catch (err) {
+                console.error(err);
+                showStatus("एनक्रिप्शन के दौरान कोई गड़बड़ हुई।", "error");
+            }
+        }
+
+        // 🔓 डिक्रिप्शन लॉजिक
+        async function handleDecrypt() {
+            const password = document.getElementById('master-password').value;
+            const savedData = localStorage.getItem('crypto_vault_data');
+
+            if (!password) {
+                showStatus("डेटा खोलने के लिए पहले अपना मास्टर पासवर्ड डालें!", "error");
+                return;
+            }
+            if (!savedData) {
+                showStatus("लोकल स्टोरेज में कोई एनक्रिप्टेड नोट नहीं मिला! पहले सेव करें।", "error");
+                return;
+            }
+
+            try {
+                const parsed = JSON.parse(savedData);
+
+                // हेक्स स्ट्रिंग्स को वापस यूज़र एरे (Uint8Array) में बदलना
+                const convertHexToBytes = hex => new Uint8Array(hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+                
+                const ciphertext = convertHexToBytes(parsed.ciphertext);
+                const salt = convertHexToBytes(parsed.salt);
+                const iv = convertHexToBytes(parsed.iv);
+
+                const key = await deriveKey(password, salt);
+
+                const decrypted = await crypto.subtle.decrypt(
+                    { name: "AES-GCM", iv: iv },
+                    key,
+                    ciphertext
+                );
+
+                const decoder = new TextDecoder();
+                document.getElementById('secret-note').value = decoder.decode(decrypted);
+                showStatus("तिजोरी खुल गई! आपका सीक्रेट नोट नीचे लोड कर दिया गया है।", "success");
+
+            } catch (err) {
+                console.error(err);
+                showStatus("गलत पासवर्ड! डेटा डिक्रिप्ट नहीं किया जा सका।", "error");
+            }
+        }
+
+        // 📋 क्लिपबोर्ड में वॉल्ट डेटा कॉपी करें
+        async function handleCopyVault() {
+            const savedData = localStorage.getItem('crypto_vault_data');
+            if (!savedData) {
+                showStatus("कोई एनक्रिप्टेड वॉल्ट डेटा नहीं मिला। पहले सेव करें।", "error");
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(savedData);
+                showStatus("एनक्रिप्टेड वॉल्ट डेटा क्लिपबोर्ड पर कॉपी किया गया।", "success");
+            } catch (err) {
+                console.error(err);
+                showStatus("क्लिपबोर्ड पर कॉपी करने में समस्या हुई।", "error");
+            }
+        }
+
+        // 🗑️ लोकल डेटा साफ़ करें
+        function handleClearVault() {
+            localStorage.removeItem('crypto_vault_data');
+            document.getElementById('secret-note').value = "";
+            document.getElementById('master-password').value = "";
+            showStatus("लोकल वॉल्ट के सभी डेटा साफ़ कर दिए गए हैं।", "success");
+        }
+    </script>
+</body>
+</html>

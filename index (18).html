@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro P2P AirDrop Clone</title>
+    <style>
+        :root {
+            --bg: #090b11;
+            --panel: #121826;
+            --accent: #00ffaa;
+            --accent-blue: #00bfff;
+            --text: #e2e8f0;
+            --border: #202b44;
+        }
+        body {
+            margin: 0; padding: 20px; font-family: system-ui, sans-serif;
+            background: var(--bg); color: var(--text);
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+        }
+        .box {
+            width: 100%; max-width: 650px; background: var(--panel);
+            padding: 30px; border-radius: 20px; border: 1px solid var(--border);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+        }
+        h2 { margin-top: 0; color: var(--accent); letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; }
+        .step {
+            background: #0d111a; border: 1px solid var(--border);
+            padding: 15px; border-radius: 12px; margin-bottom: 15px;
+        }
+        .step-title { font-size: 12px; color: var(--accent-blue); font-weight: bold; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        textarea {
+            width: 100%; background: #172033; border: 1px solid var(--border);
+            color: white; padding: 10px; border-radius: 8px; font-size: 12px;
+            box-sizing: border-box; resize: vertical; height: 50px; font-family: monospace;
+        }
+        button {
+            background: var(--accent); color: #000; border: none; padding: 12px 20px;
+            border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; width: 100%;
+            transition: all 0.2s;
+        }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        
+        /* Drop Zone Styles */
+        .drop-zone {
+            border: 2px dashed var(--border); padding: 30px 20px; border-radius: 12px;
+            text-align: center; background: #0d111a; cursor: pointer; transition: all 0.3s;
+            margin-top: 10px;
+        }
+        .drop-zone.hover { border-color: var(--accent); background: rgba(0, 255, 170, 0.05); }
+        
+        /* Progress & Controls */
+        .progress-container { margin-top: 15px; display: none; }
+        .progress-bar { width: 100%; background: #172033; height: 10px; border-radius: 5px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; font-size: 12px; color: #8a99ad; }
+        
+        .control-btns { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-pause { background: #ffaa00; color: black; }
+        .btn-resume { background: #00ffaa; color: black; }
+        
+        #status { font-size: 14px; margin-top: 15px; color: #8a99ad; text-align: center; font-weight: 500; }
+        .file-queue { font-size: 12px; color: #a0aec0; margin-top: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <h2>🚀 Advanced P2P AirDrop Clone <span id="conn-indicator" style="font-size: 12px; color: #ff5555;">● Disconnected</span></h2>
+        <p style="font-size: 13px; color: #8a99ad; margin-bottom: 20px;">बिना सर्वर के डायरेक्ट हाई-स्पीड फाइल ट्रांसफर सिस्टम।</p>
+
+        <div class="step">
+            <div class="step-title">पार्ट A: कनेक्शन शुरू करें (Sender)</div>
+            <button onclick="createOffer()">1. कनेक्शन कोड (Offer) जेनरेट करें</button>
+            <textarea id="offer-sdp" style="margin-top:6px;" placeholder="यहाँ आपका कोड आएगा..." readonly></textarea>
+        </div>
+
+        <div class="step">
+            <div class="step-title">पार्ट B: कनेक्शन स्वीकार करें (Receiver)</div>
+            <textarea id="receive-offer-sdp" placeholder="Sender का कोड यहाँ पेस्ट करें..."></textarea>
+            <button onclick="acceptOffer()" style="background:var(--accent-blue);">2. रिस्पॉन्स कोड (Answer) जेनरेट करें</button>
+            <textarea id="answer-sdp" style="margin-top:6px;" placeholder="यह आपका रिस्पॉन्स कोड है..." readonly></textarea>
+        </div>
+
+        <div class="step">
+            <div class="step-title">पार्ट C: कनेक्शन फाइनल करें (Sender)</div>
+            <textarea id="receive-answer-sdp" placeholder="Receiver का रिस्पॉन्स कोड यहाँ पेस्ट करें..."></textarea>
+            <button onclick="connectPeers()" style="background:#ff5555; color:white;">3. कनेक्शन पूरा करें</button>
+        </div>
+
+        <div class="step" style="border-color: var(--accent);">
+            <div class="step-title">फाइल ट्रांसफर हब</div>
+            
+            <div class="drop-zone" id="drop-zone">
+                <span id="drop-text">फाइलों को यहाँ ड्रैग करें या क्लिक करके चुनें</span>
+                <input type="file" id="file-input" multiple style="display: none;">
+            </div>
+            
+            <div class="file-queue" id="file-queue"></div>
+
+            <div class="control-btns">
+                <button id="send-btn" onclick="startQueueTransfer()" disabled style="background:gray; color:white;">फाइल कतार भेजें</button>
+                <button id="pause-btn" class="btn-pause" onclick="togglePause()" style="display:none;">पॉज़</button>
+            </div>
+            
+            <div class="progress-container" id="progress-container">
+                <div class="progress-bar"><div class="progress-fill" id="p-fill"></div></div>
+                <div class="stats-grid">
+                    <div id="stat-speed">स्पीड: 0 MB/s</div>
+                    <div id="stat-eta">बचा हुआ समय (ETA): 0s</div>
+                </div>
+            </div>
+            <div id="status">कनेक्शन का इंतज़ार है...</div>
+        </div>
+    </div>
+
+    <script>
+        let localConnection;
+        let dataChannel;
+        let receivedChunks = [];
+        let receivingFile = {};
+        
+        // ट्रांसफर स्टेट वेरिएबल्स
+        let fileQueue = [];
+        let currentFileIndex = 0;
+        let isPaused = false;
+        let bytesSentInLastSecond = 0;
+        let totalBytesSentForCurrentFile = 0;
+        let speedInterval;
+        let lastTime;
+        const chunkSize = 16384; // 16KB Chunks
+
+        const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+        // UI एलिमेंट्स
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const fileQueueDiv = document.getElementById('file-queue');
+        const statusDiv = document.getElementById('status');
+        const sendBtn = document.getElementById('send-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+
+        // ड्रैग एंड ड्रॉप इवेंट्स
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('hover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('hover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('hover');
+            handleFilesSelection(e.dataTransfer.files);
+        });
+        fileInput.addEventListener('change', (e) => handleFilesSelection(e.target.files));
+
+        function handleFilesSelection(files) {
+            for (let file of files) {
+                fileQueue.push(file);
+            }
+            updateQueueUI();
+        }
+
+        function updateQueueUI() {
+            if (fileQueue.length > 0) {
+                fileQueueDiv.innerHTML = `<strong>कतार में फाइलें (${fileQueue.length}):</strong><br>` + 
+                    fileQueue.map((f, i) => `${i + 1}. ${f.name} (${(f.size/(1024*1024)).toFixed(2)} MB)`).join('<br>');
+                if (dataChannel && dataChannel.readyState === "open") {
+                    sendBtn.disabled = false;
+                    sendBtn.style.background = "var(--accent)";
+                    sendBtn.style.color = "#000";
+                }
+            }
+        }
+
+        // ऑडियो अलर्ट बजाने का फंक्शन
+        function playAlertSound() {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime); // High pitch notification note
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.15);
+        }
+
+        // 1. Create Offer
+        async function createOffer() {
+            localConnection = new RTCPeerConnection(configuration);
+            dataChannel = localConnection.createDataChannel("fileTransfer");
+            setupDataChannelEvents(dataChannel);
+
+            localConnection.onicecandidate = e => {
+                if (!e.candidate) {
+                    document.getElementById('offer-sdp').value = btoa(JSON.stringify(localConnection.localDescription));
+                    statusDiv.innerText = "Offer कोड तैयार! इसे कॉपी करके दूसरे ब्राउज़र में डालें।";
+                }
+            };
+            const offer = await localConnection.createOffer();
+            await localConnection.setLocalDescription(offer);
+        }
+
+        // 2. Accept Offer
+        async function acceptOffer() {
+            const offerText = document.getElementById('receive-offer-sdp').value.trim();
+            if (!offerText) return alert("कृपया पहले ऑफर कोड डालें!");
+
+            localConnection = new RTCPeerConnection(configuration);
+            localConnection.ondatachannel = e => {
+                dataChannel = e.channel;
+                setupDataChannelEvents(dataChannel);
+            };
+
+            localConnection.onicecandidate = e => {
+                if (!e.candidate) {
+                    document.getElementById('answer-sdp').value = btoa(JSON.stringify(localConnection.localDescription));
+                    statusDiv.innerText = "Answer कोड तैयार! इसे कॉपी करके वापस पहले यूजर को दें।";
+                }
+            };
+
+            const offerDesc = new RTCSessionDescription(JSON.parse(atob(offerText)));
+            await localConnection.setRemoteDescription(offerDesc);
+            const answer = await localConnection.createAnswer();
+            await localConnection.setLocalDescription(answer);
+        }
+
+        // 3. Connect Peers
+        async function connectPeers() {
+            const answerText = document.getElementById('receive-answer-sdp').value.trim();
+            if (!answerText) return alert("कृपया रिस्पॉन्स कोड डालें!");
+            const answerDesc = new RTCSessionDescription(JSON.parse(atob(answerText)));
+            await localConnection.setRemoteDescription(answerDesc);
+        }
+
+        function setupDataChannelEvents(channel) {
+            channel.binaryType = 'arraybuffer';
+            channel.onopen = () => {
+                statusDiv.innerText = "कनेक्शन सफल! आप फाइलें भेज सकते हैं।";
+                document.getElementById('conn-indicator').innerText = "● Connected";
+                document.getElementById('conn-indicator').style.color = "var(--accent)";
+                updateQueueUI();
+            };
+
+            channel.onmessage = e => {
+                if (typeof e.data === 'string') {
+                    const meta = JSON.parse(e.data);
+                    if (meta.type === 'start') {
+                        receivingFile = meta;
+                        receivedChunks = [];
+                        document.getElementById('progress-container').style.display = 'block';
+                        statusDiv.innerText = `प्राप्त हो रही है: ${meta.name}`;
+                    } else if (meta.type === 'end') {
+                        const blob = new Blob(receivedChunks);
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url; a.download = receivingFile.name; a.click();
+                        playAlertSound();
+                        statusDiv.innerText = `सफलतापूर्वक डाउनलोड: ${receivingFile.name}`;
+                        document.getElementById('progress-container').style.display = 'none';
+                    }
+                } else {
+                    receivedChunks.push(e.data);
+                    let receivedSize = receivedChunks.length * chunkSize;
+                    let progress = (receivedSize / receivingFile.size) * 100;
+                    document.getElementById('p-fill').style.width = `${Math.min(100, progress)}%`;
+                }
+            };
+        }
+
+        // कतार (Queue) से एक-एक करके फाइलें ट्रांसफर करना
+        function startQueueTransfer() {
+            if (currentFileIndex < fileQueue.length) {
+                sendSingleFile(fileQueue[currentFileIndex]);
+            } else {
+                statusDiv.innerText = "कतार की सभी फाइलें भेज दी गई हैं!";
+                fileQueue = [];
+                currentFileIndex = 0;
+                updateQueueUI();
+                sendBtn.disabled = true;
+                sendBtn.style.background = "gray";
+            }
+        }
+
+        // सिंगल फाइल ट्रांसफर इंजन (स्पीडोमीटर, पॉज़/रिज़्यूम के साथ)
+        function sendSingleFile(file) {
+            document.getElementById('progress-container').style.display = 'block';
+            pauseBtn.style.display = 'inline-block';
+            statusDiv.innerText = `भेजी जा रही है: ${file.name}`;
+            
+            dataChannel.send(JSON.stringify({ type: 'start', name: file.name, size: file.size }));
+
+            let offset = 0;
+            totalBytesSentForCurrentFile = 0;
+            lastTime = Date.now();
+
+            // लाइव स्पीडोमीटर लॉजिक
+            speedInterval = setInterval(() => {
+                if (isPaused) return;
+                let currentTime = Date.now();
+                let timeElapsed = (currentTime - lastTime) / 1000;
+                if (timeElapsed >= 1) {
+                    let speedBytesPerSec = bytesSentInLastSecond / timeElapsed;
+                    let speedMBps = (speedBytesPerSec / (1024 * 1024)).toFixed(2);
+                    document.getElementById('stat-speed').innerText = `स्पीड: ${speedMBps} MB/s`;
+                    
+                    let remainingBytes = file.size - totalBytesSentForCurrentFile;
+                    let eta = speedBytesPerSec > 0 ? Math.round(remainingBytes / speedBytesPerSec) : 0;
+                    document.getElementById('stat-eta').innerText = `बचा हुआ समय (ETA): ${eta}s`;
+                    
+                    bytesSentInLastSecond = 0;
+                    lastTime = currentTime;
+                }
+            }, 1000);
+
+            const reader = new FileReader();
+            
+            function readNextChunk() {
+                if (isPaused) return; // अगर पॉज़ है तो लूप रोकें
+                const slice = file.slice(offset, offset + chunkSize);
+                reader.readAsArrayBuffer(slice);
+            }
+
+            reader.onload = e => {
+                dataChannel.send(e.target.result);
+                offset += e.target.result.byteLength;
+                bytesSentInLastSecond += e.target.result.byteLength;
+                totalBytesSentForCurrentFile += e.target.result.byteLength;
+
+                let progress = (offset / file.size) * 100;
+                document.getElementById('p-fill').style.width = `${progress}%`;
+
+                if (offset < file.size) {
+                    // डेटा चैनल बफर भरने से बचाने के लिए सेफ चेक
+                    if (dataChannel.bufferedAmount > 16000000) { // 16MB Buffer threshold
+                        setTimeout(readNextChunk, 100);
+                    } else {
+                        readNextChunk();
+                    }
+                } else {
+                    clearInterval(speedInterval);
+                    dataChannel.send(JSON.stringify({ type: 'end' }));
+                    playAlertSound();
+                    pauseBtn.style.display = 'none';
+                    
+                    // कतार में अगली फाइल पर जाएं
+                    currentFileIndex++;
+                    setTimeout(startQueueTransfer, 1000);
+                }
+            };
+
+            // ग्लोबल वेरिएबल में स्लाइसर को ट्रैक करना ताकि रिज़्यूम किया जा सके
+            window.resumeTransfer = function() {
+                readNextChunk();
+            };
+
+            readNextChunk();
+        }
+
+        // पॉज़ और रिज़्यूम टॉगल मैकेनिज्म
+        function togglePause() {
+            if (!isPaused) {
+                isPaused = true;
+                pauseBtn.innerText = "रिज़्यूम";
+                pauseBtn.className = "btn-resume";
+                statusDiv.innerText = "ट्रान्सफर रोक दिया गया है (Paused)";
+            } else {
+                isPaused = false;
+                pauseBtn.innerText = "पॉज़";
+                pauseBtn.className = "btn-pause";
+                statusDiv.innerText = `भेजी जा रही है: ${fileQueue[currentFileIndex].name}`;
+                lastTime = Date.now();
+                window.resumeTransfer();
+            }
+        }
+    </script>
+</body>
+</html>
