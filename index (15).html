@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Archangel Quantum Master Suite v9.0 - Final Flawless Edition</title>
+    <title>Archangel Quantum Master Suite v11.0 - Top Image Beat Pulse Edition</title>
     <style>
         :root {
             --bg-ultra-dark: #010103;
@@ -11,7 +11,7 @@
             --neon-cyan: #00ffcc;
             --neon-pink: #ff0055;
             --neon-purple: #7000ff;
-            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-border: rgba(255, 255, 255, 0.08);
         }
 
         html, body {
@@ -19,12 +19,6 @@
             background-color: var(--bg-ultra-dark); color: #ffffff;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             overflow-x: hidden; scroll-behavior: smooth;
-        }
-
-        body::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 200vh;
-            background: radial-gradient(circle at 50% 25%, transparent 20%, rgba(0,0,0,0.97) 85%);
-            pointer-events: none; z-index: 2;
         }
 
         .section {
@@ -43,131 +37,149 @@
         .grid-floor {
             position: absolute; width: 300%; height: 200%; top: 5%; left: -100%;
             transform: rotateX(72deg); transform-origin: top center;
-            will-change: background-position;
+            will-change: transform;
         }
 
         .workspace-wrapper {
             display: flex; align-items: center; justify-content: space-between;
             width: 100%; max-width: 1600px; z-index: 3; gap: 30px;
+            transition: all 0.3s ease;
         }
 
         #main-container {
             flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transform: scale(1); transition: transform 0.04s cubic-bezier(0.1, 0.8, 0.3, 1);
-            will-change: transform;
+            will-change: transform; width: 100%; transition: all 0.3s ease;
+            position: relative;
         }
 
         /* गेटवे कार्ड */
         .gateway-card {
             position: absolute; z-index: 1000; background: var(--panel-gradient);
-            border: 1px solid var(--glass-border); padding: 45px; border-radius: 36px;
-            width: 500px; text-align: center; box-shadow: 0 40px 120px rgba(0,0,0,0.95);
-            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border); padding: 40px; border-radius: 28px;
+            width: 90%; max-width: 480px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
         }
 
         .gateway-title {
-            font-size: 24px; font-weight: bold; letter-spacing: 3px;
+            font-size: 22px; font-weight: bold; letter-spacing: 2px;
             background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink));
             background-clip: text;
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             margin-bottom: 12px;
         }
 
-        .gateway-subtitle { font-size: 12px; color: #666688; margin-bottom: 30px; line-height: 1.6; }
+        .gateway-subtitle { font-size: 12px; color: #8888aa; margin-bottom: 25px; line-height: 1.5; }
         
         .opt-btn {
-            width: 100%; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255,255,255,0.06);
-            color: #ccc; padding: 15px; border-radius: 14px; cursor: pointer; font-size: 13px;
-            font-weight: 600; text-align: left; margin-bottom: 14px; transition: all 0.25s ease;
-            display: flex; align-items: center; justify-content: space-between;
+            width: 100%; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255,255,255,0.08);
+            color: #ccc; padding: 14px; border-radius: 12px; cursor: pointer; font-size: 13px;
+            font-weight: 600; text-align: left; margin-bottom: 12px; transition: background 0.2s, transform 0.2s;
+            display: flex; align-items: center; justify-content: space-between; box-sizing: border-box;
         }
         .opt-btn:hover {
             background: var(--neon-cyan); color: #000; font-weight: bold;
-            box-shadow: 0 0 25px rgba(0, 255, 204, 0.5); border-color: var(--neon-cyan);
-            transform: translateY(-2px);
+            border-color: var(--neon-cyan); transform: translateY(-2px);
         }
         .opt-btn.premium-opt { border-color: var(--neon-pink); color: #fff; }
         .opt-btn.premium-opt:hover {
-            background: var(--neon-pink); color: #fff;
-            box-shadow: 0 0 25px rgba(255, 0, 85, 0.5); border-color: var(--neon-pink);
+            background: var(--neon-pink); color: #fff; border-color: var(--neon-pink);
         }
 
-        /* लेफ्ट ऑडियो हब */
-        .audio-hub-panel {
+        /* लेफ्ट ऑडियो हब और राइट पैनल */
+        .audio-hub-panel, .hud-panel {
             background: var(--panel-gradient); border: 1px solid var(--glass-border);
-            padding: 22px; border-radius: 24px; backdrop-filter: blur(30px);
+            padding: 20px; border-radius: 20px; backdrop-filter: blur(15px);
             display: flex; flex-direction: column; gap: 12px; width: 220px;
-            box-shadow: 0 35px 80px rgba(0,0,0,0.85); align-self: center;
-        }
-
-        /* राइट पैनल */
-        .hud-panel {
-            background: var(--panel-gradient); border: 1px solid var(--glass-border);
-            padding: 22px; border-radius: 24px; backdrop-filter: blur(25px);
-            display: flex; flex-direction: column; gap: 18px; width: 220px;
-            box-shadow: 0 35px 80px rgba(0,0,0,0.85); align-self: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8); align-self: center;
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
         .panel-label { font-size: 10px; font-weight: bold; color: var(--neon-cyan); letter-spacing: 2px; text-transform: uppercase; }
         .btn-group { display: flex; flex-direction: column; gap: 8px; }
         
         .hud-btn {
-            background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);
-            color: #b0b0c5; padding: 11px 15px; border-radius: 12px; cursor: pointer; font-size: 12px;
-            text-align: left; transition: all 0.25s;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #b0b0c5; padding: 10px 14px; border-radius: 10px; cursor: pointer; font-size: 12px;
+            text-align: left; transition: all 0.2s;
         }
         .hud-btn:hover, .hud-btn.active {
-            background: var(--neon-cyan); color: #000; font-weight: bold;
-            box-shadow: 0 0 20px rgba(0, 255, 204, 0.5); border-color: var(--neon-cyan);
+            background: var(--neon-cyan); color: #000; font-weight: bold; border-color: var(--neon-cyan);
         }
         .hud-btn.audio-trigger { border-color: var(--neon-pink); color: #fff; background: rgba(255, 0, 85, 0.05); }
         .hud-btn.audio-trigger:hover, .hud-btn.audio-trigger.active {
-            background: var(--neon-pink); color: #fff; box-shadow: 0 0 20px rgba(255, 0, 85, 0.5); border-color: var(--neon-pink);
+            background: var(--neon-pink); color: #fff; border-color: var(--neon-pink);
         }
 
         .slider { width: 100%; accent-color: var(--neon-cyan); cursor: pointer; height: 6px; margin-top: 5px; }
         
         .visualizer-shield {
-            position: relative; padding: 12px; border-radius: 32px;
-            background: linear-gradient(135deg, rgba(255,0,85,0.08), rgba(0,255,204,0.08));
-            border: 1px solid var(--glass-border); box-shadow: 0 40px 110px rgba(0, 0, 0, 0.95);
+            position: relative; padding: 10px; border-radius: 24px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--glass-border);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            overflow: hidden; transition: all 0.3s ease; width: 100%; max-width: 1000px;
         }
-        #visualizer { border-radius: 22px; background: #020205; display: block; max-width: 100%; }
 
-        #track-info { font-size: 24px; font-weight: 300; letter-spacing: 2px; cursor: pointer; text-align: center; margin-bottom: 12px; }
-        #now-playing { font-size: 11px; color: #444466; text-transform: uppercase; letter-spacing: 6px; text-align: center; margin-bottom: 5px; }
-        .scroll-hint { position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); font-size: 11px; color: #444466; letter-spacing: 5px; text-transform: uppercase; display: none; cursor: pointer; animation: bounce 2s infinite; z-index: 10; }
-        @keyframes bounce { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -8px); } }
-       #fullscreenBtn{
-    position:fixed;
-    top:20px;
-    right:20px;
-    width:60px;
-    height:60px;
-    border:none;
-    border-radius:50%;
-    cursor:pointer;
-    background:#00ffd5;
-    color:#000;
-    font-size:26px;
-    font-weight:bold;
-    z-index:999999;
-    transition:.3s;
-    box-shadow:0 0 20px #00ffd5;
-}
+        #visualizer { border-radius: 16px; background: #020205; display: block; width: 100%; height: auto; }
 
-#fullscreenBtn:hover{
-    transform:scale(1.1);
-    box-shadow:0 0 40px #00ffd5;
-}
+        /* इमेज अब "Hardware Input Stream" टेक्स्ट के ऊपर दिखेगी */
+        #center-image-overlay {
+            width: 140px; height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: none;
+            margin-bottom: 15px;
+            border: 3px solid var(--neon-cyan);
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.6);
+            z-index: 10;
+            will-change: transform, box-shadow;
+            transition: transform 0.05s ease-out, box-shadow 0.05s ease-out;
+        }
+
+        #track-info { font-size: 22px; font-weight: 300; letter-spacing: 2px; cursor: pointer; text-align: center; margin-bottom: 10px; }
+        #now-playing { font-size: 11px; color: #666688; text-transform: uppercase; letter-spacing: 5px; text-align: center; margin-bottom: 5px; }
+        .scroll-hint { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 11px; color: #666688; letter-spacing: 4px; text-transform: uppercase; display: none; cursor: pointer; animation: bounce 2s infinite; z-index: 10; }
+        @keyframes bounce { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -6px); } }
+
+        #fullscreenBtn {
+            position: fixed; top: 20px; right: 20px; width: 50px; height: 50px;
+            border: none; border-radius: 50%; cursor: pointer;
+            background: var(--neon-cyan); color: #000; font-size: 22px; font-weight: bold;
+            z-index: 999999; transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
+        }
+
+        #fullscreenBtn:hover { transform: scale(1.08); box-shadow: 0 0 25px rgba(0, 255, 204, 0.7); }
+
+        /* Fullscreen Layout Overrides */
+        body.is-fullscreen .workspace-wrapper {
+            max-width: 100vw; height: 100vh; padding: 0 40px; justify-content: center;
+        }
+
+        body.is-fullscreen .visualizer-shield {
+            max-width: 92vw; height: 70vh; padding: 15px;
+        }
+
+        body.is-fullscreen #visualizer {
+            height: 100%; object-fit: cover;
+        }
+
+        body.is-fullscreen #center-image-overlay {
+            width: 180px; height: 180px;
+        }
+
+        body.is-fullscreen #now-playing, body.is-fullscreen .scroll-hint {
+            display: none !important;
+        }
     </style>
-
 </head>
 <body>
 
+    <button id="fullscreenBtn" title="Toggle Fullscreen">⛶</button>
+
     <div class="gateway-card" id="gateway">
         <div class="gateway-title">QUANTUM OMNISYNC PLATFORM</div>
-        <div class="gateway-subtitle">फ्रीजिंग बग पूरी तरह फिक्स कर दिया गया है। अपना ड्राइविंग इनपुट मोड चुनें:</div>
+        <div class="gateway-subtitle">Ultra HD High Quality - अपना इनपुट मोड चुनें:</div>
         
         <button class="opt-btn" onclick="bootQuantumEngine('cable')">
             <span>1. VB-Cable / Stereo Mix Input</span>
@@ -212,10 +224,12 @@
             </div>
 
             <div id="main-container" style="opacity:0.05; pointer-events:none;">
+                <!-- इमेज अब टेक्स्ट के ठीक ऊपर सेट है -->
+                <img id="center-image-overlay" alt="Beat Center Overlay" src="" />
                 <div id="now-playing">Quantum System Streaming Architecture</div>
                 <div id="track-info">Select Source to Engage Cockpit Hub</div>
                 <div class="visualizer-shield">
-                    <canvas id="visualizer" width="900" height="420"></canvas>
+                    <canvas id="visualizer" width="1280" height="600"></canvas>
                 </div>
             </div>
 
@@ -224,12 +238,21 @@
                     <span class="panel-label">Quantum Boost</span>
                     <input type="range" min="0.3" max="2.5" step="0.05" value="1.0" class="slider" id="gain-slider">
                 </div>
+
+                <div class="btn-group">
+                    <span class="panel-label">Custom Beat Image</span>
+                    <input type="file" id="center-img-input" accept="image/*" style="display:none;" onchange="handleCenterImageUpload(event)">
+                    <button class="hud-btn" style="border-color:var(--neon-cyan); color:#fff;" onclick="document.getElementById('center-img-input').click()">🖼️ Select Top Image</button>
+                    <button class="hud-btn" id="remove-img-btn" style="display:none; color:#ff4444;" onclick="removeCenterImage()">❌ Remove Image</button>
+                </div>
+
                 <div class="btn-group">
                     <span class="panel-label">Graphics Matrix</span>
                     <button class="hud-btn active" id="m-wave" onclick="changeGraphicsMode('wave')">Liquid Spline Wave</button>
                     <button class="hud-btn" id="m-bars" onclick="changeGraphicsMode('bars')">Neon Peak Rods</button>
                     <button class="hud-btn" id="m-circle" onclick="changeGraphicsMode('circle')">Radial Singularity</button>
                 </div>
+
                 <div class="btn-group">
                     <span class="panel-label">Reset Station</span>
                     <button class="hud-btn" style="border-color:var(--neon-pink); color:white; text-align:center;" onclick="location.reload()">← Main Menu</button>
@@ -244,8 +267,8 @@
     <div class="section" id="section-grid">
         <div class="grid-floor" id="floor"></div>
         <div style="z-index: 3; text-align: center;">
-            <h1 id="deck-title" style="font-size: 58px; margin: 0; letter-spacing: 16px; text-shadow: 0 0 35px #00ffcc; color: #00ffcc; font-weight: 300;">CYBER DECK ACTIVE</h1>
-            <p style="color: #444477; letter-spacing: 7px; font-size: 12px; margin-top: 18px; text-transform: uppercase;">Realtime Multi-Source Responsive Processing Dock</p>
+            <h1 id="deck-title" style="font-size: 48px; margin: 0; letter-spacing: 12px; text-shadow: 0 0 25px #00ffcc; color: #00ffcc; font-weight: 300;">CYBER DECK ACTIVE</h1>
+            <p style="color: #666699; letter-spacing: 5px; font-size: 11px; margin-top: 15px; text-transform: uppercase;">Realtime Multi-Source Responsive Processing Dock</p>
         </div>
     </div>
 
@@ -262,10 +285,12 @@
         const gainSlider = document.getElementById('gain-slider');
         const floor = document.getElementById('floor');
         const internetAudio = document.getElementById('internet-audio');
+        const fullscreenBtn = document.getElementById("fullscreenBtn");
+        const centerImageOverlay = document.getElementById("center-image-overlay");
+        const removeImgBtn = document.getElementById("remove-img-btn");
 
         let audioCtx = null, mainAnalyser = null, frequencyData = null, bufferLen = 0;
-        let activeSourceNode = null, micStreamInstance = null;
-        let elementSourceNode = null; // 🛠️ फिक्स: एलिमेंट सोर्स नोड को ग्लोबल ट्रैक करने के लिए
+        let activeSourceNode = null, micStreamInstance = null, elementSourceNode = null;
         let activeRenderMode = 'wave', gridScrollY = 0;
 
         let cosmicStarfieldArray = [];
@@ -274,11 +299,33 @@
         let sideGravityDropsHeap = [];        
 
         const themeColors = ['#ff0055', '#ff6600', '#00ffcc', '#7000ff'];
+        let cachedGradient = null;
 
         trackInfo.addEventListener('dblclick', () => {
-            const manualName = prompt("ट्रैक का नाम कस्टमाइज़ करें:", trackInfo.innerText);
+            const manualName = prompt("ट्रैक का नाम बदलें:", trackInfo.innerText);
             if (manualName && manualName.trim() !== "") trackInfo.innerText = manualName;
         });
+
+        /* इमेज अपलोड और रिमूव हैंडलर */
+        function handleCenterImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    centerImageOverlay.src = e.target.result;
+                    centerImageOverlay.style.display = 'block';
+                    removeImgBtn.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeCenterImage() {
+            centerImageOverlay.src = '';
+            centerImageOverlay.style.display = 'none';
+            removeImgBtn.style.display = 'none';
+            document.getElementById('center-img-input').value = '';
+        }
 
         function changeGraphicsMode(m) {
             activeRenderMode = m;
@@ -291,17 +338,16 @@
             constructor(x, y, color) {
                 this.x = x; this.y = y;
                 this.radius = Math.random() * 3 + 1.5;
-                this.vx = Math.random() * 6 - 3;
-                this.vy = -(Math.random() * 4 + 2);
+                this.vx = Math.random() * 5 - 2.5;
+                this.vy = -(Math.random() * 4 + 1);
                 this.gravity = 0.08; this.alpha = 1.0; this.color = color;
             }
             update() {
                 this.vy += this.gravity; this.x += this.vx; this.y += this.vy;
-                this.alpha -= 0.016;
+                this.alpha -= 0.018;
             }
             draw() {
                 ctx.save(); ctx.globalAlpha = this.alpha; ctx.fillStyle = this.color;
-                ctx.shadowBlur = 10; ctx.shadowColor = this.color;
                 ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fill();
                 ctx.restore();
             }
@@ -312,19 +358,18 @@
                 this.side = side;
                 this.x = side === 'left' ? 0 : canvas.width;
                 this.y = Math.random() * (canvas.height * 0.55); 
-                this.radius = Math.random() * 4 + 2;
-                this.vx = side === 'left' ? (Math.random() * 5 + 3) : -(Math.random() * 5 + 3);
+                this.radius = Math.random() * 4 + 1.5;
+                this.vx = side === 'left' ? (Math.random() * 5 + 2.5) : -(Math.random() * 5 + 2.5);
                 this.vy = -(Math.random() * 3 + 1);
                 this.gravity = 0.12; this.alpha = 1.0;
                 this.color = themeColors[Math.floor(Math.random() * themeColors.length)];
             }
             update() {
                 this.vy += this.gravity; this.x += this.vx; this.y += this.vy;
-                this.alpha -= 0.014;
+                this.alpha -= 0.018;
             }
             draw() {
                 ctx.save(); ctx.globalAlpha = this.alpha; ctx.fillStyle = this.color;
-                ctx.shadowBlur = 15; ctx.shadowColor = this.color;
                 ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fill();
                 ctx.restore();
             }
@@ -332,7 +377,7 @@
 
         function initCosmicTunnel() {
             cosmicStarfieldArray = [];
-            for (let i = 0; i < 45; i++) {
+            for (let i = 0; i < 40; i++) {
                 cosmicStarfieldArray.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * (canvas.height * 0.62),
@@ -377,7 +422,7 @@
                     connectDriverPipeline(source, false);
                 }
             } catch (err) {
-                console.warn("माइक ब्लॉक पॉलिसी एरर बाईपास एक्जीक्यूटेड।");
+                console.warn("Audio permissions fallback engaged.");
                 nowPlaying.innerText = "Local File Policy Active";
                 trackInfo.innerText = "Select Jukebox Track or Local MP3";
             }
@@ -399,14 +444,11 @@
             hint.style.display = 'block';
         }
 
-        function switchInputSource(type) {
-            bootQuantumEngine(type);
-        }
+        function switchInputSource(type) { bootQuantumEngine(type); }
 
-        // 🛠️ फ़िक्स 2: नोड री-क्रिएशन फ्रीज को पूरी तरह रोकने के लिए सुधरा हुआ फ़ंक्शन
         function loadCloudTrack(url, trackName, btn) {
             document.querySelectorAll('#left-hud .hud-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            if(btn) btn.classList.add('active');
 
             if (micStreamInstance) {
                 try { micStreamInstance.getTracks().forEach(t => t.stop()); micStreamInstance = null; } catch(e){}
@@ -416,12 +458,11 @@
 
             internetAudio.pause();
             internetAudio.src = url;
-            internetAudio.play().catch(e => console.log("प्लेबैक शुरू।"));
+            internetAudio.play().catch(e => console.log("Audio playback initiated."));
 
             nowPlaying.innerText = "Direct Cloud Stream Synchronizer";
             trackInfo.innerText = trackName;
 
-            // अगर पहले से मीडिया एलिमेंट नोड बना हुआ है, तो उसे दोबारा कभी नहीं बनाएंगे
             if (!elementSourceNode) {
                 elementSourceNode = audioCtx.createMediaElementSource(internetAudio);
             }
@@ -462,7 +503,7 @@
         function connectDriverPipeline(sourceNode, connectOut) {
             if (!mainAnalyser) {
                 mainAnalyser = audioCtx.createAnalyser();
-                mainAnalyser.smoothingTimeConstant = 0.85;
+                mainAnalyser.smoothingTimeConstant = 0.82;
                 mainAnalyser.fftSize = 256;
                 bufferLen = mainAnalyser.frequencyBinCount;
                 frequencyData = new Uint8Array(bufferLen);
@@ -472,7 +513,6 @@
                 }
             }
 
-            // 🛠️ फ़िक्स 3: पुराने कनेक्शन्स को सेफली साफ़ करके फ्रेश पाइपलाइन लोड करना ताकि थ्रेड लॉक न हो
             try { sourceNode.disconnect(); } catch(e){}
             try { mainAnalyser.disconnect(); } catch(e){}
 
@@ -493,12 +533,16 @@
             
             mainAnalyser.getByteFrequencyData(frequencyData);
 
-            ctx.fillStyle = 'rgba(2, 2, 5, 0.16)';
+            ctx.fillStyle = 'rgba(2, 2, 5, 0.22)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            const primaryGrad = ctx.createLinearGradient(0, 0, canvas.width, 0);
-            primaryGrad.addColorStop(0, themeColors[0]); primaryGrad.addColorStop(0.35, themeColors[1]);
-            primaryGrad.addColorStop(0.7, themeColors[2]); primaryGrad.addColorStop(1, themeColors[3]);
+            if (!cachedGradient) {
+                cachedGradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+                cachedGradient.addColorStop(0, themeColors[0]);
+                cachedGradient.addColorStop(0.35, themeColors[1]);
+                cachedGradient.addColorStop(0.7, themeColors[2]);
+                cachedGradient.addColorStop(1, themeColors[3]);
+            }
 
             const horizonAxisY = canvas.height * 0.64;
             const boost = parseFloat(gainSlider.value);
@@ -508,30 +552,36 @@
             for (let i = 0; i < bassZoneMax; i++) bassSum += frequencyData[i];
             const avgBass = bassSum / bassZoneMax;
 
+            /* इमेज पल्स प्रभाव */
+            if (centerImageOverlay.style.display === 'block') {
+                const bassRatio = (avgBass / 255) * boost;
+                const imgScale = 1 + bassRatio * 0.35; 
+                const glowIntensity = 20 + bassRatio * 50;
+                centerImageOverlay.style.transform = `scale(${imgScale})`;
+                centerImageOverlay.style.boxShadow = `0 0 ${glowIntensity}px rgba(0, 255, 204, ${0.4 + bassRatio * 0.6})`;
+            }
+
             for (let i = 0; i < cosmicStarfieldArray.length; i++) {
                 let star = cosmicStarfieldArray[i];
-                star.x -= star.vz * (1 + (avgBass / 255) * 4);
+                star.x -= star.vz * (1 + (avgBass / 255) * 3);
                 if (star.x < 0) star.x = canvas.width;
-                ctx.fillStyle = `rgba(255, 255, 255, ${0.15 + (avgBass/255)*0.5})`;
+                ctx.fillStyle = `rgba(255, 255, 255, ${0.2 + (avgBass/255)*0.5})`;
                 ctx.beginPath(); ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2); ctx.fill();
             }
 
             if (avgBass > 115) {
                 const p = (avgBass - 115) / 140;
-                mainContainer.style.transform = `scale(${1 + p * 0.020})`;
-                gridScrollY += 2.5 + p * 12;
+                gridScrollY += 2 + p * 8;
 
-                if (Math.random() > 0.58) {
+                if (Math.random() > 0.65) {
                     sideGravityDropsHeap.push(new SideRgbGravityDrop('left'));
                     sideGravityDropsHeap.push(new SideRgbGravityDrop('right'));
                 }
             } else {
-                mainContainer.style.transform = `scale(1)`;
-                gridScrollY += 2.0;
+                gridScrollY += 1.5;
             }
 
-            floor.style.backgroundPosition = `0 ${gridScrollY}px`;
-            floor.style.backgroundImage = `linear-gradient(${themeColors[2]}22 2.5px, transparent 2.5px), linear-gradient(90deg, ${themeColors[2]}22 2.5px, transparent 2.5px)`;
+            floor.style.transform = `rotateX(72deg) translateY(${gridScrollY % 40}px)`;
 
             let points = [];
             let stepW = canvas.width / (bufferLen - 1 || 1);
@@ -541,7 +591,7 @@
                 let x = i * stepW;
                 points.push({ x: x, y: y });
 
-                if (frequencyData[i] > 165 && Math.random() > 0.94) {
+                if (frequencyData[i] > 175 && Math.random() > 0.93) {
                     centerExplosionParticles.push(new CenterExplosionParticle(x, y, themeColors[2]));
                 }
             }
@@ -550,35 +600,35 @@
                 ctx.save();
                 if (isMirror) {
                     ctx.translate(0, horizonAxisY * 2); ctx.scale(1, -1);
-                    ctx.globalAlpha = 0.22 + (avgBass / 255) * 0.16;
+                    ctx.globalAlpha = 0.2 + (avgBass / 255) * 0.15;
                 }
 
                 if (activeRenderMode === 'wave') {
                     ctx.beginPath(); ctx.moveTo(0, horizonAxisY);
                     for (let i = 0; i < bufferLen; i++) ctx.lineTo(points[i].x, points[i].y);
                     ctx.lineTo(canvas.width, horizonAxisY); ctx.closePath();
-                    ctx.fillStyle = primaryGrad; ctx.fill();
-                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.4; ctx.stroke();
+                    ctx.fillStyle = cachedGradient; ctx.fill();
+                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.5; ctx.stroke();
                 } 
                 else if (activeRenderMode === 'bars') {
-                    let barW = (canvas.width / bufferLen) * 1.35;
+                    let barW = (canvas.width / bufferLen) * 1.3;
                     for (let i = 0; i < bufferLen; i++) {
                         let h = (frequencyData[i] / 255.0) * horizonAxisY * 0.65 * boost;
                         let bX = i * barW; let bY = horizonAxisY - h;
-                        ctx.fillStyle = primaryGrad; ctx.fillRect(bX, bY, barW - 4, h);
+                        ctx.fillStyle = cachedGradient; ctx.fillRect(bX, bY, barW - 3, h);
 
                         if (!isMirror) {
                             let cap = peakCapsArray[i];
                             if (bY < cap.y || cap.y === 0) { cap.y = bY; cap.speed = 0.4; } 
                             else { cap.y += cap.speed; cap.speed += 0.12; }
                             if (cap.y > horizonAxisY) cap.y = horizonAxisY;
-                            ctx.fillStyle = '#ffffff'; ctx.fillRect(bX, cap.y - 3, barW - 4, 3);
+                            ctx.fillStyle = '#ffffff'; ctx.fillRect(bX, cap.y - 3, barW - 3, 3);
                         }
                     }
                 } 
                 else if (activeRenderMode === 'circle') {
-                    let cX = canvas.width / 2; let cY = horizonAxisY / 2 + 15;
-                    let rBase = 65 + (avgBass * 0.36);
+                    let cX = canvas.width / 2; let cY = horizonAxisY / 2 + 10;
+                    let rBase = 70 + (avgBass * 0.35);
                     ctx.beginPath();
                     for (let i = 0; i < bufferLen; i++) {
                         let ang = (i / bufferLen) * Math.PI * 2;
@@ -586,7 +636,7 @@
                         let r = rBase + ext;
                         ctx.lineTo(cX + Math.cos(ang) * r, cY + Math.sin(ang) * r);
                     }
-                    ctx.closePath(); ctx.strokeStyle = primaryGrad; ctx.lineWidth = 3.6; ctx.stroke();
+                    ctx.closePath(); ctx.strokeStyle = cachedGradient; ctx.lineWidth = 3.5; ctx.stroke();
                 }
                 ctx.restore();
             }
@@ -595,10 +645,10 @@
             drawCombinedVfxPipeline(true);
 
             let mask = ctx.createLinearGradient(0, horizonAxisY, 0, canvas.height);
-            mask.addColorStop(0, 'rgba(2, 2, 5, 0.12)'); mask.addColorStop(0.7, 'rgba(2, 2, 5, 0.98)');
+            mask.addColorStop(0, 'rgba(2, 2, 5, 0.1)'); mask.addColorStop(0.8, 'rgba(2, 2, 5, 1)');
             ctx.fillStyle = mask; ctx.fillRect(0, horizonAxisY, canvas.width, canvas.height - horizonAxisY);
 
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)'; ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)'; ctx.lineWidth = 1;
             ctx.beginPath(); ctx.moveTo(0, horizonAxisY); ctx.lineTo(canvas.width, horizonAxisY); ctx.stroke();
 
             for (let i = centerExplosionParticles.length - 1; i >= 0; i--) {
@@ -610,56 +660,30 @@
                 let d = sideGravityDropsHeap[i]; d.update(); d.draw();
                 if (d.alpha <= 0 || d.y > canvas.height) sideGravityDropsHeap.splice(i, 1);
             }
+        }
 
-            if (activeRenderMode !== 'circle') {
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.04)'; ctx.fillRect(40, canvas.height - 20, canvas.width - 80, 4);
-                ctx.fillStyle = themeColors[2]; ctx.fillRect(40, canvas.height - 20, (canvas.width - 80) * 0.45 + (avgBass * 0.4), 4);
+        /* Fullscreen Handling */
+        fullscreenBtn.addEventListener("click", async function () {
+            try {
+                if (!document.fullscreenElement) {
+                    await document.documentElement.requestFullscreen();
+                } else {
+                    await document.exitFullscreen();
+                }
+            } catch (err) {
+                console.error(err);
             }
-        }
-    </script>
-   <button id="fullscreenBtn" class="fullscreen-btn" title="Fullscreen">
-⛶
-</button>
-    <script>
-        const fullscreenBtn = document.getElementById("fullscreenBtn");
+        });
 
-fullscreenBtn.addEventListener("click", async function () {
-
-    try{
-
-        if(!document.fullscreenElement){
-
-            await document.documentElement.requestFullscreen();
-
-        }else{
-
-            await document.exitFullscreen();
-
-        }
-
-    }catch(err){
-
-        console.error(err);
-
-        alert("Fullscreen failed");
-
-    }
-
-});
-
-document.addEventListener("fullscreenchange",()=>{
-
-    if(document.fullscreenElement){
-
-        fullscreenBtn.innerHTML="🡼";
-
-    }else{
-
-        fullscreenBtn.innerHTML="⛶";
-
-    }
-
-});
+        document.addEventListener("fullscreenchange", () => {
+            const isFS = !!document.fullscreenElement;
+            fullscreenBtn.innerHTML = isFS ? "🡼" : "⛶";
+            if (isFS) {
+                document.body.classList.add("is-fullscreen");
+            } else {
+                document.body.classList.remove("is-fullscreen");
+            }
+        });
     </script>
 </body>
 </html>
