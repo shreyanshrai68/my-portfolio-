@@ -68,6 +68,7 @@
         .gateway-title {
             font-size: 24px; font-weight: bold; letter-spacing: 3px;
             background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink));
+            background-clip: text;
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             margin-bottom: 12px;
         }
@@ -137,7 +138,30 @@
         #now-playing { font-size: 11px; color: #444466; text-transform: uppercase; letter-spacing: 6px; text-align: center; margin-bottom: 5px; }
         .scroll-hint { position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); font-size: 11px; color: #444466; letter-spacing: 5px; text-transform: uppercase; display: none; cursor: pointer; animation: bounce 2s infinite; z-index: 10; }
         @keyframes bounce { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -8px); } }
+       #fullscreenBtn{
+    position:fixed;
+    top:20px;
+    right:20px;
+    width:60px;
+    height:60px;
+    border:none;
+    border-radius:50%;
+    cursor:pointer;
+    background:#00ffd5;
+    color:#000;
+    font-size:26px;
+    font-weight:bold;
+    z-index:999999;
+    transition:.3s;
+    box-shadow:0 0 20px #00ffd5;
+}
+
+#fullscreenBtn:hover{
+    transform:scale(1.1);
+    box-shadow:0 0 40px #00ffd5;
+}
     </style>
+
 </head>
 <body>
 
@@ -592,6 +616,50 @@
                 ctx.fillStyle = themeColors[2]; ctx.fillRect(40, canvas.height - 20, (canvas.width - 80) * 0.45 + (avgBass * 0.4), 4);
             }
         }
+    </script>
+   <button id="fullscreenBtn" class="fullscreen-btn" title="Fullscreen">
+⛶
+</button>
+    <script>
+        const fullscreenBtn = document.getElementById("fullscreenBtn");
+
+fullscreenBtn.addEventListener("click", async function () {
+
+    try{
+
+        if(!document.fullscreenElement){
+
+            await document.documentElement.requestFullscreen();
+
+        }else{
+
+            await document.exitFullscreen();
+
+        }
+
+    }catch(err){
+
+        console.error(err);
+
+        alert("Fullscreen failed");
+
+    }
+
+});
+
+document.addEventListener("fullscreenchange",()=>{
+
+    if(document.fullscreenElement){
+
+        fullscreenBtn.innerHTML="🡼";
+
+    }else{
+
+        fullscreenBtn.innerHTML="⛶";
+
+    }
+
+});
     </script>
 </body>
 </html>
