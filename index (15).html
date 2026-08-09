@@ -100,7 +100,7 @@
         .hud-btn {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
             color: #b0b0c5; padding: 10px 14px; border-radius: 10px; cursor: pointer; font-size: 12px;
-            text-align: left; transition: all 0.2s;
+            text-align: left; transition: all 0.2s; box-sizing: border-box;
         }
         .hud-btn:hover, .hud-btn.active {
             background: var(--neon-cyan); color: #000; font-weight: bold; border-color: var(--neon-cyan);
@@ -209,9 +209,14 @@
         <div class="workspace-wrapper">
             
             <div class="audio-hub-panel" style="display:none; opacity: 0;" id="left-hud">
-                <span class="panel-label">Audio Inputs</span>
-                <button class="hud-btn" id="input-mic" onclick="switchInputSource('mic')">Mic/Ambient Capture</button>
-                <button class="hud-btn" id="input-cable" onclick="switchInputSource('cable')">VB-Cable Drive</button>
+                <span class="panel-label">Select Audio Device</span>
+                <select id="audio-device-select" class="hud-btn" style="background:#0a0a1a; color:#00ffcc; width:100%; border-color:var(--neon-cyan); outline:none;">
+                    <option value="">Detecting Devices...</option>
+                </select>
+
+                <span class="panel-label" style="margin-top:10px;">Audio Inputs</span>
+                <button class="hud-btn" id="input-mic" onclick="switchInputSource('ambient')">Mic/Ambient Capture</button>
+                <button class="hud-btn" id="input-cable" onclick="switchInputSource('cable')">VB-Cable / System Hardware</button>
                 
                 <span class="panel-label" style="margin-top:10px;">Cloud Jukebox</span>
                 <button class="hud-btn audio-trigger" id="track-1" onclick="loadCloudTrack('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', 'Synthwave Core (Mix 01)', this)">Track 01: Synthwave</button>
@@ -288,6 +293,7 @@
         const fullscreenBtn = document.getElementById("fullscreenBtn");
         const centerImageOverlay = document.getElementById("center-image-overlay");
         const removeImgBtn = document.getElementById("remove-img-btn");
+        const deviceSelect = document.getElementById('audio-device-select');
 
         let audioCtx = null, mainAnalyser = null, frequencyData = null, bufferLen = 0;
         let activeSourceNode = null, micStreamInstance = null, elementSourceNode = null;
@@ -304,6 +310,55 @@
         trackInfo.addEventListener('dblclick', () => {
             const manualName = prompt("ट्रैक का नाम बदलें:", trackInfo.innerText);
             if (manualName && manualName.trim() !== "") trackInfo.innerText = manualName;
+        });
+
+        /* ऑडियो इनपुट डिवाइसेस सूची प्राप्त करें (VB-Cable, Mic, Stereo Mix) */
+        async function populateAudioDevices() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const audioInputs = devices.filter(device => device.kind === 'audioinput');
+
+                deviceSelect.innerHTML = '';
+                if (audioInputs.length === 0) {
+                    const option = document.createElement('option');
+                    option.text = "No Audio Device Found";
+                    deviceSelect.appendChild(option);
+                    return;
+                }
+
+                audioInputs.forEach((device, index) => {
+                    const option = document.createElement('option');
+                    option.value = device.deviceId;
+                    let label = device.label || `Audio Device ${index + 1}`;
+                    if (label.toLowerCase().includes('cable')) {
+                        label = "⚡ " + label;
+                    } else if (label.toLowerCase().includes('microphone')) {
+                        label = "🎤 " + label;
+                    }
+                    option.text = label;
+                    deviceSelect.appendChild(option);
+                });
+
+                if (micStreamInstance) {
+                    const activeTrack = micStreamInstance.getAudioTracks()[0];
+                    if (activeTrack) {
+                        const settings = activeTrack.getSettings();
+                        if (settings.deviceId) {
+                            deviceSelect.value = settings.deviceId;
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Device Enumeration Error:", err);
+            }
+        }
+
+        deviceSelect.addEventListener('change', () => {
+            const selectedDeviceId = deviceSelect.value;
+            if (selectedDeviceId) {
+                bootQuantumEngine('cable', selectedDeviceId);
+            }
         });
 
         /* इमेज अपलोड और रिमूव हैंडलर */
@@ -387,7 +442,7 @@
             }
         }
 
-        async function bootQuantumEngine(sourceType) {
+        async function bootQuantumEngine(sourceType, targetDeviceId = null) {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') await audioCtx.resume();
 
@@ -399,7 +454,11 @@
                     if (micStreamInstance) { micStreamInstance.getTracks().forEach(t => t.stop()); }
                     internetAudio.pause();
                     
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    const audioConstraints = targetDeviceId 
+                        ? { deviceId: { exact: targetDeviceId } }
+                        : true;
+
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints });
                     micStreamInstance = stream;
                     
                     if (activeSourceNode && activeSourceNode !== elementSourceNode) { 
@@ -413,16 +472,18 @@
                     if (sourceType === 'cable') {
                         document.getElementById('input-cable').classList.add('active');
                         nowPlaying.innerText = "Hardware Input Stream";
-                        trackInfo.innerText = "VB-Cable / Stereo Mix Active";
+                        trackInfo.innerText = "VB-Cable / Audio Sync Active";
                     } else {
                         document.getElementById('input-mic').classList.add('active');
                         nowPlaying.innerText = "YouTube & Spotify Web Sync Mode";
                         trackInfo.innerText = "Ambient Mic Listening...";
                     }
+
                     connectDriverPipeline(source, false);
+                    await populateAudioDevices();
                 }
             } catch (err) {
-                console.warn("Audio permissions fallback engaged.");
+                console.warn("Audio permissions fallback engaged.", err);
                 nowPlaying.innerText = "Local File Policy Active";
                 trackInfo.innerText = "Select Jukebox Track or Local MP3";
             }
@@ -444,7 +505,10 @@
             hint.style.display = 'block';
         }
 
-        function switchInputSource(type) { bootQuantumEngine(type); }
+        function switchInputSource(type) { 
+            const selectedDeviceId = deviceSelect.value;
+            bootQuantumEngine(type, selectedDeviceId || null); 
+        }
 
         function loadCloudTrack(url, trackName, btn) {
             document.querySelectorAll('#left-hud .hud-btn').forEach(b => b.classList.remove('active'));
